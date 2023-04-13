@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -12,10 +15,6 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "forceConsistentCasingInFileNames": true
   }
 }
