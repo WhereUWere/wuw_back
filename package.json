@@ -7,6 +7,8 @@
     "license": "UNLICENSED",
     "scripts": {
         "clean": "rimraf dist",
+        "prepare": "husky install",
+        "preinstall": "npx only-allow pnpm",
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
@@ -19,8 +21,7 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "docker:db": "docker-compose -f docker-compose.db.yml up -d",
-        "prepare": "husky install"
+        "docker:db": "docker-compose -f docker-compose.db.yml up -d"
     },
     "lint-staged": {
         "{src,test}/**/*.{js,ts}": [
@@ -33,6 +34,7 @@
         "@nestjs/config": "^2.3.1",
         "@nestjs/core": "9.4.0",
         "@nestjs/platform-express": "9.4.0",
+        "joi": "^17.9.1",
         "reflect-metadata": "0.1.13",
         "rxjs": "7.2.0"
     },
@@ -81,5 +83,10 @@
         ],
         "coverageDirectory": "../coverage",
         "testEnvironment": "node"
+    },
+    "packageManager": "pnpm@7.29.3",
+    "engines": {
+        "node": "14.18 - 18.15",
+        "pnpm": "7.29.3"
     }
 }
