@@ -10,6 +10,9 @@ import * as Joi from 'joi';
             isGlobal: true,
             validationSchema: Joi.object({
                 NODE_ENV: Joi.string().required(),
+                API_VERSION: Joi.string().required(),
+                API_PORT: Joi.string().required(),
+                SWAGGER_PREFIX: Joi.string().required(),
                 DB_USER: Joi.string().required(),
                 DB_PASSWORD: Joi.string().required(),
                 DB_PORT: Joi.string().required(),
