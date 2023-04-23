@@ -9,7 +9,7 @@ async function bootstrap() {
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle('WUW APIs')
-        .setDescription('API docs for WUW test project')
+        .setDescription('API docs for WUW project')
         .setVersion('1.0.0')
         .addSecurity('Authorization', {
             type: 'http',
