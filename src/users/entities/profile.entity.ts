@@ -9,16 +9,16 @@ export class ProfileEntity extends BaseEntity implements ProfileModel {
     @ApiProperty()
     nickname: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, nullable: true })
     phoneNumber: string | null;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, nullable: true })
     birthOfDate: string | null;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, nullable: true })
     avatar: string | null;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, nullable: true })
     bio: string | null;
 
     constructor(profile: ProfileModel) {

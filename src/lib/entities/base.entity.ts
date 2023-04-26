@@ -8,7 +8,7 @@ export class BaseEntity implements IBase {
     @ApiProperty()
     updatedAt: Date;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, nullable: true })
     deletedAt: Date | null;
 
     constructor(createdAt: Date, updatedAt: Date, deletedAt: Date | null) {

@@ -19,7 +19,7 @@ export class UserEntity implements UserModel {
     @ApiProperty()
     updatedAt: Date;
 
-    @ApiProperty()
+    @ApiProperty({ required: false, nullable: true })
     deletedAt: Date | null;
 
     constructor(user: UserModel) {
