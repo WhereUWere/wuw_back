@@ -17,23 +17,22 @@ model User {
   deletedAt    DateTime? @map("deleted_at")
   profile      Profile?
 
-  @@map("user")
+  @@map("users")
 }
 
 model Profile {
-  profileId   Int       @id @default(autoincrement()) @map("profile_id")
+  userId      Int       @id @unique @map("user_id")
   nickname    String    @unique @db.VarChar(20)
   phoneNumber String?   @unique @map("phone_number") @db.VarChar(11)
   birthOfDate String?   @map("birth_of_date") @db.VarChar(8)
   avatar      String?   @db.VarChar(255)
   bio         String?
-  userId      Int       @unique @map("user_id")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
   deletedAt   DateTime? @map("deleted_at")
-  user        User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  @@map("profile")
+  @@map("profiles")
 }
 
 enum Role {
