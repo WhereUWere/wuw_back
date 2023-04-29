@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "strict": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "noUnusedParameters": true,
         "declaration": true,
         "removeComments": true,
