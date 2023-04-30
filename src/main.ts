@@ -1,11 +1,17 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { api } from './config/apiConfig';
+import { ResponseTransformInterceptor } from './lib/interceptors/response-transform.interceptor';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+    app.useGlobalInterceptors(new ResponseTransformInterceptor());
     app.setGlobalPrefix(api.globalPrefix);
+    app.enableCors({ origin: true, methods: ['GET', 'POST', 'PUT', 'DELETE'] });
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle('WUW APIs')

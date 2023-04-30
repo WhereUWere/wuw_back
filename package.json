@@ -36,6 +36,8 @@
         "@nestjs/platform-express": "9.4.0",
         "@nestjs/swagger": "^6.3.0",
         "@prisma/client": "4.13.0",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.0",
         "joi": "^17.9.1",
         "reflect-metadata": "0.1.13",
         "rxjs": "7.2.0",
@@ -44,6 +46,7 @@
     "devDependencies": {
         "@commitlint/cli": "^17.6.1",
         "@commitlint/config-conventional": "^17.6.1",
+        "@golevelup/ts-jest": "^0.3.6",
         "@nestjs/cli": "9.4.0",
         "@nestjs/schematics": "9.1.0",
         "@nestjs/testing": "9.4.0",
@@ -76,6 +79,9 @@
             "json",
             "ts"
         ],
+        "moduleNameMapper": {
+            "^src/(.*)$": "<rootDir>/$1"
+        },
         "rootDir": "src",
         "testRegex": ".*\\.spec\\.ts$",
         "transform": {
