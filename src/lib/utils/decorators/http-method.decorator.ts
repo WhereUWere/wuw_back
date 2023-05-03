@@ -8,7 +8,7 @@ import {
     HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { IRouteOptions } from 'src/lib/interface/route.interface';
+import { IRouteOptions } from 'src/lib/interfaces/route.interface';
 import { Type } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseResponse } from 'src/lib/dto/response/base.response';
