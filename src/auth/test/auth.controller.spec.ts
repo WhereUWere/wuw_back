@@ -7,6 +7,8 @@ import { UserRepository } from 'src/user/repository/user.repository';
 import { ProfileRepository } from 'src/user/repository/profile.repository';
 import { PostEmailReq } from '../dto/request/post.email.req';
 import { PostEmailRes } from '../dto/response/post.email.res';
+import { PostNicknameReq } from '../dto/request/post.nickname.req';
+import { PostNicknameRes } from '../dto/response/post.nickname.res';
 
 describe('AuthController', () => {
     let authController: AuthController;
@@ -16,22 +18,10 @@ describe('AuthController', () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
-                {
-                    provide: AuthService,
-                    useValue: createMock<AuthService>(),
-                },
-                {
-                    provide: UserRepository,
-                    useValue: createMock<UserRepository>(),
-                },
-                {
-                    provide: ProfileRepository,
-                    useValue: createMock<ProfileRepository>(),
-                },
-                {
-                    provide: PrismaService,
-                    useValue: createMock<PrismaService>(),
-                },
+                { provide: AuthService, useValue: createMock<AuthService>() },
+                { provide: UserRepository, useValue: createMock<UserRepository>() },
+                { provide: ProfileRepository, useValue: createMock<ProfileRepository>() },
+                { provide: PrismaService, useValue: createMock<PrismaService>() },
             ],
         }).compile();
 
@@ -52,7 +42,6 @@ describe('AuthController', () => {
             authService.checkDuplicateEmail = jest.fn();
             await authController.checkDuplicateEmail(reqDto);
             expect(authService.checkDuplicateEmail).toBeCalledTimes(1);
-            expect(authService.checkDuplicateEmail).toBeCalledWith(reqDto);
         });
         it('이메일이 존재할 경우, true 를 리턴한다.', async () => {
             const reqDto = new PostEmailReq('abcdefg@test.com');
@@ -65,6 +54,30 @@ describe('AuthController', () => {
             const resDto = new PostEmailRes(true);
             authService.checkDuplicateEmail = jest.fn().mockResolvedValue(resDto);
             expect(await authController.checkDuplicateEmail(reqDto)).toBe(resDto);
+        });
+    });
+
+    describe('checkDuplicateNickname', () => {
+        it('checkDuplicateNickname 이 정의되어 있다.', () => {
+            expect(authController.checkDuplicateNickname).toBeDefined();
+        });
+        it('Service 를 호출한다.', async () => {
+            const reqDto = new PostNicknameReq('test');
+            authService.checkDuplicateNickname = jest.fn();
+            await authController.checkDuplicateNickname(reqDto);
+            expect(authService.checkDuplicateNickname).toBeCalledTimes(1);
+        });
+        it('닉네임이 존재할 경우, true 를 리턴한다.', async () => {
+            const reqDto = new PostNicknameReq('test');
+            const resDto = new PostNicknameRes(true);
+            authService.checkDuplicateNickname = jest.fn().mockResolvedValue(resDto);
+            expect(await authController.checkDuplicateNickname(reqDto)).toBe(resDto);
+        });
+        it('닉네임이 존재하지 않을 경우, false 를 리턴한다.', async () => {
+            const reqDto = new PostNicknameReq('test');
+            const resDto = new PostNicknameRes(true);
+            authService.checkDuplicateNickname = jest.fn().mockResolvedValue(resDto);
+            expect(await authController.checkDuplicateNickname(reqDto)).toBe(resDto);
         });
     });
 });

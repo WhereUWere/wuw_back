@@ -6,7 +6,7 @@ import { UserRepository } from '../repository/user.repository';
 import { ProfileRepository } from '../repository/profile.repository';
 import { PrismaService } from '../../../prisma/prisma.service';
 
-describe('UsersController', () => {
+describe('UserController', () => {
     let userController: UserController;
     let userService: UserService;
 
