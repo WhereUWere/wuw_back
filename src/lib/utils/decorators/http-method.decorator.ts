@@ -9,9 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { IRouteOptions } from 'src/lib/interfaces/route.interface';
-import { Type } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseResponse } from 'src/lib/dto/response/base.response';
+import { apiResponseMapper } from '../../dto/response/map.response';
 
 export function Get(options: IRouteOptions) {
     const { endPoint, summary, type, isArray, status } = options;
@@ -68,17 +66,3 @@ export function Delete(options: IRouteOptions) {
         HttpCode(statusCode),
     );
 }
-
-const apiResponseMapper = <
-    T extends Type<unknown> | Function | [Function] | Record<string, any> | string,
->(
-    type: T,
-    isArray?: boolean,
-) => {
-    class ApiResponseMapper extends BaseResponse {
-        @ApiProperty({ type, isArray })
-        data: any;
-    }
-
-    return ApiResponseMapper;
-};
