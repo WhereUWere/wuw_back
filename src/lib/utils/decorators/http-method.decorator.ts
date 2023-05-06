@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { IRouteOptions } from 'src/lib/interfaces/route.interface';
-import { apiResponseMapper } from '../../dto/response/map.response';
+import { apiResponseMapper } from '../../response/map.response';
 
 export function Get(options: IRouteOptions) {
     const { endPoint, summary, type, isArray, status } = options;
