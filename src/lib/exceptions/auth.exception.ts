@@ -10,7 +10,7 @@ export class EmailNotFoundException extends BaseException {
 
 export class NotAuthenticatedException extends BaseException {
     constructor() {
-        super(AuthExceptionCodeEnum.NotAuthenticated, HttpStatus.BAD_REQUEST);
+        super(AuthExceptionCodeEnum.NotAuthenticated, HttpStatus.UNAUTHORIZED);
     }
 }
 
@@ -23,5 +23,11 @@ export class EmailExistsException extends BaseException {
 export class NicknameExistsException extends BaseException {
     constructor() {
         super(AuthExceptionCodeEnum.NicknameExists, HttpStatus.BAD_REQUEST);
+    }
+}
+
+export class NicknameNotFoundException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.NicknameNotFound, HttpStatus.NOT_FOUND);
     }
 }

@@ -15,4 +15,15 @@ export class ProfileRepository {
             },
         });
     }
+
+    async findNicknameByUserId(userId: number): Promise<{ nickname: string } | null> {
+        return await this.prisma.profile.findUnique({
+            where: {
+                userId,
+            },
+            select: {
+                nickname: true,
+            },
+        });
+    }
 }

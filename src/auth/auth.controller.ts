@@ -8,6 +8,8 @@ import { PostNicknameRes } from './dto/response/post.nickname.res';
 import { PostNicknameReq } from './dto/request/post.nickname.req';
 import { PostSignUpRes } from './dto/response/post.signup.res';
 import { PostSignUpReq } from './dto/request/post.signup.req';
+import { PostSignInRes } from './dto/response/post.signin.res';
+import { PostSignInReq } from './dto/request/post.signin.req';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -44,5 +46,15 @@ export class AuthController {
     @ApiBody({ type: PostSignUpReq })
     async signUp(@Body() req: PostSignUpReq): Promise<PostSignUpRes> {
         return await this.authService.signUp(req);
+    }
+
+    @Post({
+        endPoint: '/signin',
+        summary: '로그인',
+        type: PostSignInRes,
+    })
+    @ApiBody({ type: PostSignInReq })
+    async signIn(@Body() req: PostSignInReq): Promise<PostSignInRes> {
+        return await this.authService.signIn(req);
     }
 }

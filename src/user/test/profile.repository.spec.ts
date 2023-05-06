@@ -30,7 +30,6 @@ describe('ProfileRepository', () => {
         it('nickname 이 존재한다면, userId 를 리턴한다.', async () => {
             prismaService.profile.findUnique = jest.fn().mockResolvedValue({ userId: 1 });
             const result = await profileRepository.findUserIdByNickname('test');
-            expect(result?.userId).toBe(1);
             expect(result).toStrictEqual({ userId: 1 });
         });
         it('nickname 이 존재하지 않으면, null 을 리턴한다.', async () => {
@@ -47,7 +46,6 @@ describe('ProfileRepository', () => {
         it('userId 가 존재한다면, nickname 을 리턴한다.', async () => {
             prismaService.profile.findUnique = jest.fn().mockResolvedValue({ nickname: 'test' });
             const result = await profileRepository.findNicknameByUserId(1);
-            expect(result?.nickname).toBe('test');
             expect(result).toStrictEqual({ nickname: 'test' });
         });
         it('userId 가 존재하지 않으면, null 을 리턴한다.', async () => {

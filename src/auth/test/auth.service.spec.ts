@@ -13,6 +13,7 @@ import {
     EmailExistsException,
     EmailNotFoundException,
     NicknameExistsException,
+    NicknameNotFoundException,
     NotAuthenticatedException,
 } from 'src/lib/exceptions/auth.exception';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
@@ -23,13 +24,13 @@ import { PostSignInRes } from '../dto/response/post.signin.res';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
 
-describe('AuthService', async () => {
+describe('AuthService', () => {
     let authService: AuthService;
     let userRepository: UserRepository;
     let profileRepository: ProfileRepository;
     let jwtService: JwtService;
 
-    const encryptedPassword = await bcrypt.hash('password', auth.hashSalt);
+    const encryptedPassword = bcrypt.hashSync('password', auth.hashSalt);
     const mockedUser = {
         userId: 1,
         email: 'abcdefg@test.com',
@@ -76,7 +77,6 @@ describe('AuthService', async () => {
             const resDto = new PostEmailRes(true);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue({ userId: 1 });
             const result = await authService.checkDuplicateEmail(reqDto);
-            expect(result.isDuplicated).toBe(true);
             expect(result).toStrictEqual(resDto);
         });
         it('이메일이 존재하지 않을 경우, false 를 리턴한다.', async () => {
@@ -84,7 +84,6 @@ describe('AuthService', async () => {
             const resDto = new PostEmailRes(false);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
             const result = await authService.checkDuplicateEmail(reqDto);
-            expect(result.isDuplicated).toBe(false);
             expect(result).toStrictEqual(resDto);
         });
     });
@@ -98,7 +97,6 @@ describe('AuthService', async () => {
             const resDto = new PostNicknameRes(true);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue({ userId: 1 });
             const result = await authService.checkDuplicateNickname(reqDto);
-            expect(result.isDuplicated).toBe(true);
             expect(result).toStrictEqual(resDto);
         });
         it('닉네임이 존재하지 않을 경우, false 를 리턴한다.', async () => {
@@ -106,7 +104,6 @@ describe('AuthService', async () => {
             const resDto = new PostNicknameRes(false);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue(null);
             const result = await authService.checkDuplicateNickname(reqDto);
-            expect(result.isDuplicated).toBe(false);
             expect(result).toStrictEqual(resDto);
         });
     });
@@ -141,8 +138,6 @@ describe('AuthService', async () => {
             userRepository.createAndSave = jest.fn().mockResolvedValue(mockedUser);
             const result = await authService.signUp(reqDto);
             expect(result).toStrictEqual(resDto);
-            expect(result.nickname).toBe('test');
-            expect(result.jwtToken).toBe(jwtToken);
         });
     });
 
@@ -162,6 +157,13 @@ describe('AuthService', async () => {
             const result = async () => await authService.signIn(reqDto);
             await expect(result).rejects.toThrowError(new NotAuthenticatedException());
         });
+        it('nickname 이 존재하지 않을 경우, NicknameNotFoundException 발생', async () => {
+            const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
+            userRepository.findUserByEmail = jest.fn().mockResolvedValue(mockedUser);
+            profileRepository.findNicknameByUserId = jest.fn().mockResolvedValue(null);
+            const result = async () => await authService.signIn(reqDto);
+            await expect(result).rejects.toThrowError(new NicknameNotFoundException());
+        });
         it('signIn 이 성공하면, nickname 과 jwtToken 을 리턴한다.', async () => {
             const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
@@ -172,8 +174,6 @@ describe('AuthService', async () => {
                 .mockResolvedValue({ nickname: mockedUser.nickname });
             const result = await authService.signIn(reqDto);
             expect(result).toStrictEqual(resDto);
-            expect(result.nickname).toBe(mockedUser.nickname);
-            expect(result.jwtToken).toBe(jwtToken);
         });
     });
 });

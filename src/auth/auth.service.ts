@@ -7,11 +7,19 @@ import { PostNicknameRes } from './dto/response/post.nickname.res';
 import { ProfileRepository } from 'src/user/repository/profile.repository';
 import { PostSignUpReq } from './dto/request/post.signup.req';
 import { PostSignUpRes } from './dto/response/post.signup.res';
-import { EmailExistsException, NicknameExistsException } from 'src/lib/exceptions/auth.exception';
+import {
+    EmailExistsException,
+    EmailNotFoundException,
+    NicknameExistsException,
+    NicknameNotFoundException,
+    NotAuthenticatedException,
+} from 'src/lib/exceptions/auth.exception';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayloadReq } from './dto/request/jwt.payload.req';
+import { PostSignInReq } from './dto/request/post.signin.req';
+import { PostSignInRes } from './dto/response/post.signin.res';
 
 @Injectable()
 export class AuthService {
@@ -48,6 +56,19 @@ export class AuthService {
         const jwtToken = await this.createJwtToken(newUser.userId);
 
         return new PostSignUpRes(req.nickname, jwtToken);
+    }
+
+    async signIn(req: PostSignInReq): Promise<PostSignInRes> {
+        const userExists = await this.userRepository.findUserByEmail(req.email);
+        if (!userExists) throw new EmailNotFoundException();
+        const isMatch = await bcrypt.compare(req.password, userExists.password);
+        if (!isMatch) throw new NotAuthenticatedException();
+
+        const profile = await this.profileRepository.findNicknameByUserId(userExists.userId);
+        if (!profile) throw new NicknameNotFoundException();
+
+        const jwtToken = await this.createJwtToken(userExists.userId);
+        return new PostSignInRes(profile.nickname, jwtToken);
     }
 
     private async createJwtToken(userId: number): Promise<string> {

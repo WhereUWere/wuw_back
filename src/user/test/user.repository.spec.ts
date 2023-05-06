@@ -6,11 +6,11 @@ import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
 
-describe('UserRepository', async () => {
+describe('UserRepository', () => {
     let userRepository: UserRepository;
     let prismaService: PrismaService;
 
-    const encryptedPassword = await bcrypt.hash('password', auth.hashSalt);
+    const encryptedPassword = bcrypt.hashSync('password', auth.hashSalt);
     const mockedUser = {
         userId: 1,
         email: 'abcdefg@test.com',
@@ -45,7 +45,6 @@ describe('UserRepository', async () => {
         it('email 이 존재한다면, userId 를 리턴한다.', async () => {
             prismaService.user.findUnique = jest.fn().mockResolvedValue({ userId: 1 });
             const result = await userRepository.findUserIdByEmail('abcdefg@test.com');
-            expect(result?.userId).toBe(1);
             expect(result).toStrictEqual({ userId: 1 });
         });
         it('email 이 존재하지 않으면, null 을 리턴한다.', async () => {

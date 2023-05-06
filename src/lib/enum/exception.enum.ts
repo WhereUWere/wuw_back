@@ -11,4 +11,5 @@ export enum AuthExceptionCodeEnum {
     NotAuthenticated = '0002',
     EmailExists = '0003',
     NicknameExists = '0004',
+    NicknameNotFound = '0005',
 }
