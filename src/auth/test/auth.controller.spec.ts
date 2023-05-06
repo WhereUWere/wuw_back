@@ -11,8 +11,6 @@ import { PostNicknameReq } from '../dto/request/post.nickname.req';
 import { PostNicknameRes } from '../dto/response/post.nickname.res';
 import { PostSignUpReq } from '../dto/request/post.signup.req';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
-import { now } from 'src/lib/utils/dates/date.utils';
-import { Role } from '@prisma/client';
 
 describe('AuthController', () => {
     let authController: AuthController;
@@ -20,6 +18,7 @@ describe('AuthController', () => {
     const email = 'abcdefg@test.com';
     const nickname = 'test';
     const password = 'password';
+    const jwtToken = 'testJwtToken';
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -71,18 +70,8 @@ describe('AuthController', () => {
             expect(authController.signUp).toBeDefined();
         });
         it('Service 의 리턴값을 반환한다.', async () => {
-            const mockedUser = {
-                userId: 1,
-                email,
-                nickname,
-                password,
-                role: Role.USER,
-                registeredAt: now(),
-                updatedAt: now(),
-                deletedAt: null,
-            };
             const reqDto = new PostSignUpReq(email, nickname, password);
-            const resDto = new PostSignUpRes(mockedUser);
+            const resDto = new PostSignUpRes(nickname, jwtToken);
             authService.signUp = jest.fn().mockResolvedValue(resDto);
             const result = await authController.signUp(reqDto);
             expect(result).toBe(resDto);

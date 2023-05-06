@@ -6,45 +6,25 @@ import { DateFormatEnum } from 'src/lib/utils/dates/date.format';
 
 export class PostSignUpRes {
     @Exclude()
-    private readonly _userId: number;
+    private readonly _nickname: string;
 
     @Exclude()
-    private readonly _email: string;
+    private readonly _jwtToken: string;
 
-    @Exclude()
-    private readonly _role: Role;
-
-    @Exclude()
-    private readonly _registeredAt: Date;
-
-    constructor(user: UserModel) {
-        this._userId = user.userId;
-        this._email = user.email;
-        this._role = user.role;
-        this._registeredAt = user.registeredAt;
+    constructor(nickname: string, jwtToken: string) {
+        this._nickname = nickname;
+        this._jwtToken = jwtToken;
     }
 
     @ApiProperty()
     @Expose()
-    get userId(): number {
-        return this._userId;
+    get nickname(): string {
+        return this._nickname;
     }
 
     @ApiProperty()
     @Expose()
-    get email(): string {
-        return this._email;
-    }
-
-    @ApiProperty()
-    @Expose()
-    get role(): Role {
-        return this._role;
-    }
-
-    @ApiProperty()
-    @Expose()
-    get registeredAt(): string {
-        return format(this._registeredAt, DateFormatEnum.Datetime);
+    get jwtToken(): string {
+        return this._jwtToken;
     }
 }

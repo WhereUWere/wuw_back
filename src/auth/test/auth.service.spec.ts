@@ -13,17 +13,25 @@ import { EmailExistsException, NicknameExistsException } from 'src/lib/exception
 import { PostSignUpRes } from '../dto/response/post.signup.res';
 import { Role } from '@prisma/client';
 import { now } from 'src/lib/utils/dates/date.utils';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
     let authService: AuthService;
     let userRepository: UserRepository;
     let profileRepository: ProfileRepository;
+    let jwtService: JwtService;
     const email = 'abcdefg@test.com';
     const nickname = 'test';
     const password = 'password';
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                JwtModule.register({
+                    secret: 'testSecret',
+                    signOptions: { expiresIn: '60s' },
+                }),
+            ],
             providers: [
                 AuthService,
                 { provide: UserRepository, useValue: createMock<UserRepository>() },
@@ -35,6 +43,7 @@ describe('AuthService', () => {
         authService = module.get<AuthService>(AuthService);
         userRepository = module.get<UserRepository>(UserRepository);
         profileRepository = module.get<ProfileRepository>(ProfileRepository);
+        jwtService = module.get<JwtService>(JwtService);
     });
 
     it('should be defined', () => {
@@ -115,14 +124,14 @@ describe('AuthService', () => {
             await expect(result).rejects.toThrowError(new NicknameExistsException());
         });
         it('signUp 이 성공하면, 가입된 user 를 리턴한다.', async () => {
+            const jwtToken = await jwtService.signAsync({ userId: 1 });
             const reqDto = new PostSignUpReq(email, nickname, password);
-            const resDto = new PostSignUpRes(mockedUser);
+            const resDto = new PostSignUpRes(nickname, jwtToken);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue(null);
             userRepository.createAndSave = jest.fn().mockResolvedValue(mockedUser);
             const result = await authService.signUp(reqDto);
             expect(result).toStrictEqual(resDto);
-            expect(result.email).toBe(email);
         });
     });
 });

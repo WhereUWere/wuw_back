@@ -7,5 +7,7 @@ export interface ApiConfigProps {
 }
 
 export interface AuthConfigProps {
+    jwtSecret: string;
+    jwtExpireTime: string;
     hashSalt: number;
 }

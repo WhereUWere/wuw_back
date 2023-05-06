@@ -10,10 +10,13 @@ import { PostSignUpRes } from './dto/response/post.signup.res';
 import { EmailExistsException, NicknameExistsException } from 'src/lib/exceptions/auth.exception';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayloadReq } from './dto/request/jwt.payload.req';
 
 @Injectable()
 export class AuthService {
     constructor(
+        private readonly jwtService: JwtService,
         private readonly userRepository: UserRepository,
         private readonly profileRepository: ProfileRepository,
     ) {}
@@ -42,7 +45,14 @@ export class AuthService {
             encryptedPassword,
         );
 
-        return new PostSignUpRes(newUser);
+        const jwtToken = await this.createJwtToken(newUser.userId);
+
+        return new PostSignUpRes(req.nickname, jwtToken);
+    }
+
+    private async createJwtToken(userId: number): Promise<string> {
+        const jwtPayload = Object.assign({}, new JwtPayloadReq(userId));
+        return await this.jwtService.signAsync(jwtPayload);
     }
 
     private async encryptPassword(password: string): Promise<string> {
