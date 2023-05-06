@@ -68,7 +68,7 @@ describe('AuthController', () => {
 
     describe('signUp', () => {
         it('signUp 이 정의되어 있다.', () => {
-            expect(AuthController.signUp).toBeDefined();
+            expect(authController.signUp).toBeDefined();
         });
         it('Service 의 리턴값을 반환한다.', async () => {
             const mockedUser = {

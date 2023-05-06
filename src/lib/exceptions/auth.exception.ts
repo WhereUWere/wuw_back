@@ -8,9 +8,9 @@ export class EmailNotFoundException extends BaseException {
     }
 }
 
-export class PasswordNotMatchException extends BaseException {
+export class NotAuthenticatedException extends BaseException {
     constructor() {
-        super(AuthExceptionCodeEnum.PasswordNotMatch, HttpStatus.BAD_REQUEST);
+        super(AuthExceptionCodeEnum.NotAuthenticated, HttpStatus.BAD_REQUEST);
     }
 }
 

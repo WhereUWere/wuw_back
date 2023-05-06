@@ -4,6 +4,7 @@ import { BaseException } from '../exceptions/base/base.exception';
 import { UnCatchedException } from '../exceptions/uncatch.exception';
 import { format } from 'date-fns';
 import { DateFormatEnum } from '../utils/dates/date.format';
+import { api } from 'src/config/apiConfig';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -16,6 +17,8 @@ export class AllExceptionFilter implements ExceptionFilter {
 
         res.timestamp = format(new Date(), DateFormatEnum.Datetime);
         res.path = httpAdapter.getRequestUrl(ctx.getRequest());
+
+        if (api.nodeEnv === 'development') console.log(exception);
 
         httpAdapter.reply(
             ctx.getResponse(),

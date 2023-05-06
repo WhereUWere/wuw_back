@@ -5,3 +5,7 @@ export interface ApiConfigProps {
     globalPrefix: string;
     swaggerPrefix: string;
 }
+
+export interface AuthConfigProps {
+    hashSalt: number;
+}

@@ -62,7 +62,6 @@ describe('UserRepository', () => {
             const result = await userRepository.createAndSave(email, nickname, password);
             expect(result).toStrictEqual(mockedUser);
             expect(result.email).toStrictEqual(email);
-            expect(result.nickname).toStrictEqual(nickname);
             expect(result.password).toStrictEqual(password);
         });
     });

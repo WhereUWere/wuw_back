@@ -6,6 +6,8 @@ import { PostEmailRes } from './dto/response/post.email.res';
 import { PostEmailReq } from './dto/request/post.email.req';
 import { PostNicknameRes } from './dto/response/post.nickname.res';
 import { PostNicknameReq } from './dto/request/post.nickname.req';
+import { PostSignUpRes } from './dto/response/post.signup.res';
+import { PostSignUpReq } from './dto/request/post.signup.req';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -32,5 +34,15 @@ export class AuthController {
     @ApiBody({ type: PostNicknameReq })
     async checkDuplicateNickname(@Body() req: PostNicknameReq): Promise<PostNicknameRes> {
         return await this.authService.checkDuplicateNickname(req);
+    }
+
+    @Post({
+        endPoint: '/signup',
+        summary: '회원가입',
+        type: PostSignUpRes,
+    })
+    @ApiBody({ type: PostSignUpReq })
+    async signUp(@Body() req: PostSignUpReq): Promise<PostSignUpRes> {
+        return await this.authService.signUp(req);
     }
 }

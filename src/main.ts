@@ -5,10 +5,19 @@ import { api } from './config/apiConfig';
 import { ResponseTransformInterceptor } from './lib/interceptors/response-transform.interceptor';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AllExceptionFilter } from './lib/filter/exception.filter';
+import { ValidationError } from 'class-validator';
+import { ValidateException } from './lib/exceptions/validate.exception';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
+            exceptionFactory: (_: ValidationError[] = []) => {
+                return new ValidateException();
+            },
+        }),
+    );
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
     app.useGlobalInterceptors(new ResponseTransformInterceptor());
     app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));

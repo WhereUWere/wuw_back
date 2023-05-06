@@ -18,6 +18,7 @@ import * as Joi from 'joi';
                 DB_PORT: Joi.string().required(),
                 DB_URL: Joi.string().required(),
                 DB_NAME: Joi.string().required(),
+                HASH_SALT: Joi.number().required(),
             }),
         }),
         UserModule,

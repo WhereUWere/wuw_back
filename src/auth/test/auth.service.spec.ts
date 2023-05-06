@@ -98,7 +98,7 @@ describe('AuthService', () => {
             jest.clearAllMocks();
         });
         it('signUp 이 정의되어 있다.', () => {
-            expect(AuthService.signUp).toBeDefined();
+            expect(authService.signUp).toBeDefined();
         });
         it('가입된 email 이 존재할 경우, EmailExistsException 발생', async () => {
             const reqDto = new PostSignUpReq(email, nickname, password);
@@ -123,7 +123,6 @@ describe('AuthService', () => {
             const result = await authService.signUp(reqDto);
             expect(result).toStrictEqual(resDto);
             expect(result.email).toBe(email);
-            expect(result.nickname).toBe(nickname);
         });
     });
 });

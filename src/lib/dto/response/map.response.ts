@@ -8,10 +8,15 @@ export const apiResponseMapper = <
     type: T,
     isArray?: boolean,
 ) => {
-    class ApiResponseMapper extends BaseResponse {
+    const descriptor = Object.getOwnPropertyDescriptor(type, 'name');
+    class WrappedResponse extends BaseResponse {
         @ApiProperty({ type, isArray })
         data: any;
     }
 
-    return ApiResponseMapper;
+    Object.defineProperty(WrappedResponse, 'name', {
+        value: `Wrapped${descriptor?.value}`,
+    });
+
+    return WrappedResponse;
 };
