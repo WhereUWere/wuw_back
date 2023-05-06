@@ -9,10 +9,17 @@ import { PostEmailReq } from '../dto/request/post.email.req';
 import { PostEmailRes } from '../dto/response/post.email.res';
 import { PostNicknameReq } from '../dto/request/post.nickname.req';
 import { PostNicknameRes } from '../dto/response/post.nickname.res';
+import { PostSignUpReq } from '../dto/request/post.signup.req';
+import { PostSignUpRes } from '../dto/response/post.signup.res';
+import { now } from 'src/lib/utils/dates/date.utils';
+import { Role } from '@prisma/client';
 
 describe('AuthController', () => {
     let authController: AuthController;
     let authService: AuthService;
+    const email = 'abcdefg@test.com';
+    const nickname = 'test';
+    const password = 'password';
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -37,23 +44,12 @@ describe('AuthController', () => {
         it('checkDuplicateEmail 이 정의되어 있다.', () => {
             expect(authController.checkDuplicateEmail).toBeDefined();
         });
-        it('Service 를 호출한다.', async () => {
-            const reqDto = new PostEmailReq('abcdefg@test.com');
-            authService.checkDuplicateEmail = jest.fn();
-            await authController.checkDuplicateEmail(reqDto);
-            expect(authService.checkDuplicateEmail).toBeCalledTimes(1);
-        });
-        it('이메일이 존재할 경우, true 를 리턴한다.', async () => {
-            const reqDto = new PostEmailReq('abcdefg@test.com');
+        it('Service 의 리턴값을 반환한다.', async () => {
+            const reqDto = new PostEmailReq(email);
             const resDto = new PostEmailRes(true);
             authService.checkDuplicateEmail = jest.fn().mockResolvedValue(resDto);
-            expect(await authController.checkDuplicateEmail(reqDto)).toBe(resDto);
-        });
-        it('이메일이 존재하지 않을 경우, false 를 리턴한다.', async () => {
-            const reqDto = new PostEmailReq('abcdefg@test.com');
-            const resDto = new PostEmailRes(true);
-            authService.checkDuplicateEmail = jest.fn().mockResolvedValue(resDto);
-            expect(await authController.checkDuplicateEmail(reqDto)).toBe(resDto);
+            const result = await authController.checkDuplicateEmail(reqDto);
+            expect(result).toBe(resDto);
         });
     });
 
@@ -61,23 +57,35 @@ describe('AuthController', () => {
         it('checkDuplicateNickname 이 정의되어 있다.', () => {
             expect(authController.checkDuplicateNickname).toBeDefined();
         });
-        it('Service 를 호출한다.', async () => {
-            const reqDto = new PostNicknameReq('test');
-            authService.checkDuplicateNickname = jest.fn();
-            await authController.checkDuplicateNickname(reqDto);
-            expect(authService.checkDuplicateNickname).toBeCalledTimes(1);
-        });
-        it('닉네임이 존재할 경우, true 를 리턴한다.', async () => {
-            const reqDto = new PostNicknameReq('test');
-            const resDto = new PostNicknameRes(true);
+        it('Service 의 리턴값을 반환한다.', async () => {
+            const reqDto = new PostNicknameReq(nickname);
+            const resDto = new PostNicknameRes(false);
             authService.checkDuplicateNickname = jest.fn().mockResolvedValue(resDto);
-            expect(await authController.checkDuplicateNickname(reqDto)).toBe(resDto);
+            const result = await authController.checkDuplicateNickname(reqDto);
+            expect(result).toBe(resDto);
         });
-        it('닉네임이 존재하지 않을 경우, false 를 리턴한다.', async () => {
-            const reqDto = new PostNicknameReq('test');
-            const resDto = new PostNicknameRes(true);
-            authService.checkDuplicateNickname = jest.fn().mockResolvedValue(resDto);
-            expect(await authController.checkDuplicateNickname(reqDto)).toBe(resDto);
+    });
+
+    describe('signUp', () => {
+        it('signUp 이 정의되어 있다.', () => {
+            expect(AuthController.signUp).toBeDefined();
+        });
+        it('Service 의 리턴값을 반환한다.', async () => {
+            const mockedUser = {
+                userId: 1,
+                email,
+                nickname,
+                password,
+                role: Role.USER,
+                registeredAt: now(),
+                updatedAt: now(),
+                deletedAt: null,
+            };
+            const reqDto = new PostSignUpReq(email, nickname, password);
+            const resDto = new PostSignUpRes(mockedUser);
+            authService.signUp = jest.fn().mockResolvedValue(resDto);
+            const result = await authController.signUp(reqDto);
+            expect(result).toBe(resDto);
         });
     });
 });

@@ -5,4 +5,6 @@ export enum UncatchedExceptionCodeEnum {
 export enum AuthExceptionCodeEnum {
     EmailNotFound = '0001',
     PasswordNotMatch = '0002',
+    EmailExists = '0003',
+    NicknameExists = '0004',
 }
