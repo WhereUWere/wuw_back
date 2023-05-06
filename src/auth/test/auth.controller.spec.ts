@@ -11,14 +11,12 @@ import { PostNicknameReq } from '../dto/request/post.nickname.req';
 import { PostNicknameRes } from '../dto/response/post.nickname.res';
 import { PostSignUpReq } from '../dto/request/post.signup.req';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
+import { PostSignInReq } from '../dto/request/post.signin.req';
+import { PostSignInRes } from '../dto/response/post.signin.res';
 
 describe('AuthController', () => {
     let authController: AuthController;
     let authService: AuthService;
-    const email = 'abcdefg@test.com';
-    const nickname = 'test';
-    const password = 'password';
-    const jwtToken = 'testJwtToken';
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -43,8 +41,8 @@ describe('AuthController', () => {
         it('checkDuplicateEmail 이 정의되어 있다.', () => {
             expect(authController.checkDuplicateEmail).toBeDefined();
         });
-        it('Service 의 리턴값을 반환한다.', async () => {
-            const reqDto = new PostEmailReq(email);
+        it('Service 의 반환값을 리턴한다.', async () => {
+            const reqDto = new PostEmailReq('abcdefg@test.com');
             const resDto = new PostEmailRes(true);
             authService.checkDuplicateEmail = jest.fn().mockResolvedValue(resDto);
             const result = await authController.checkDuplicateEmail(reqDto);
@@ -56,8 +54,8 @@ describe('AuthController', () => {
         it('checkDuplicateNickname 이 정의되어 있다.', () => {
             expect(authController.checkDuplicateNickname).toBeDefined();
         });
-        it('Service 의 리턴값을 반환한다.', async () => {
-            const reqDto = new PostNicknameReq(nickname);
+        it('Service 의 반환값을 리턴한다.', async () => {
+            const reqDto = new PostNicknameReq('test');
             const resDto = new PostNicknameRes(false);
             authService.checkDuplicateNickname = jest.fn().mockResolvedValue(resDto);
             const result = await authController.checkDuplicateNickname(reqDto);
@@ -69,11 +67,24 @@ describe('AuthController', () => {
         it('signUp 이 정의되어 있다.', () => {
             expect(authController.signUp).toBeDefined();
         });
-        it('Service 의 리턴값을 반환한다.', async () => {
-            const reqDto = new PostSignUpReq(email, nickname, password);
-            const resDto = new PostSignUpRes(nickname, jwtToken);
+        it('Service 의 반환값을 리턴한다.', async () => {
+            const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
+            const resDto = new PostSignUpRes('test', 'testJwtToken');
             authService.signUp = jest.fn().mockResolvedValue(resDto);
             const result = await authController.signUp(reqDto);
+            expect(result).toBe(resDto);
+        });
+    });
+
+    describe('signIn', () => {
+        it('signIn 이 정의되어 있다.', () => {
+            expect(authController.signIn).toBeDefined();
+        });
+        it('Service 의 반환값을 리턴한다.', async () => {
+            const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
+            const resDto = new PostSignInRes('test', 'testJwtToken');
+            authService.signIn = jest.fn().mockResolvedValue(resDto);
+            const result = await authController.signIn(reqDto);
             expect(result).toBe(resDto);
         });
     });
