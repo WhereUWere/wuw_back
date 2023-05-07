@@ -17,12 +17,15 @@ import {
     NotAuthenticatedException,
 } from 'src/lib/exceptions/auth.exception';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
-import { Role } from '@prisma/client';
+import { Profile as ProfileModel, Role, User as UserModel } from '@prisma/client';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PostSignInReq } from '../dto/request/post.signin.req';
 import { PostSignInRes } from '../dto/response/post.signin.res';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { PostBreakOutReq } from '../dto/request/post.breakout.req';
+import { PostBreakOutRes } from '../dto/response/post.breakout.res';
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -31,13 +34,23 @@ describe('AuthService', () => {
     let jwtService: JwtService;
 
     const encryptedPassword = bcrypt.hashSync('password', auth.hashSalt);
-    const mockedUser = {
+    const mockedUser: UserModel = {
         userId: 1,
         email: 'abcdefg@test.com',
-        nickname: 'test',
         password: encryptedPassword,
         role: Role.USER,
         registeredAt: new Date('2023-05-07 03:33:00'),
+        updatedAt: new Date('2023-05-07 03:33:00'),
+        deletedAt: null,
+    };
+    const mockedProfile: ProfileModel = {
+        userId: 1,
+        nickname: 'test',
+        phoneNumber: null,
+        birthOfDate: null,
+        avatar: null,
+        bio: null,
+        createdAt: new Date('2023-05-07 03:33:00'),
         updatedAt: new Date('2023-05-07 03:33:00'),
         deletedAt: null,
     };
@@ -167,12 +180,39 @@ describe('AuthService', () => {
         it('signIn 이 성공하면, nickname 과 jwtToken 을 리턴한다.', async () => {
             const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
-            const resDto = new PostSignInRes(mockedUser.nickname, jwtToken);
+            const resDto = new PostSignInRes('test', jwtToken);
             userRepository.findUserByEmail = jest.fn().mockResolvedValue(mockedUser);
             profileRepository.findNicknameByUserId = jest
                 .fn()
-                .mockResolvedValue({ nickname: mockedUser.nickname });
+                .mockResolvedValue({ nickname: 'test' });
             const result = await authService.signIn(reqDto);
+            expect(result).toStrictEqual(resDto);
+        });
+    });
+
+    describe('breakOut', () => {
+        it('breakOut 이 정의되어 있다.', () => {
+            expect(authService.breakOut).toBeDefined();
+        });
+        it('password 가 일치하지 않을 경우, NotAuthenticatedException 발생', async () => {
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const userEntity = new UserEntity(mockedUser);
+            const reqDto = new PostBreakOutReq('wrongPassword');
+            const result = async () => await authService.breakOut(userEntity, reqDto, deletedAt);
+            await expect(result).rejects.toThrowError(new NotAuthenticatedException());
+        });
+        it('breakOut 이 성공하면, 탈퇴 날짜를 리턴한다.', async () => {
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const mockedUserDelete = Object.assign({}, mockedUser);
+            const mockedProfileDelete = Object.assign({}, mockedProfile);
+            mockedUserDelete.deletedAt = deletedAt;
+            mockedProfileDelete.deletedAt = deletedAt;
+            const userEntity = new UserEntity(mockedUser);
+            const reqDto = new PostBreakOutReq('password');
+            const resDto = new PostBreakOutRes(deletedAt);
+            userRepository.softDelete = jest.fn().mockResolvedValue(mockedUserDelete);
+            profileRepository.softDelete = jest.fn().mockResolvedValue(mockedProfileDelete);
+            const result = await authService.breakOut(userEntity, reqDto, deletedAt);
             expect(result).toStrictEqual(resDto);
         });
     });

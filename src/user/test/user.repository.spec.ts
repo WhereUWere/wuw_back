@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { UserRepository } from '../repository/user.repository';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { Role } from '@prisma/client';
+import { Role, User as UserModel } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
 
@@ -11,10 +11,9 @@ describe('UserRepository', () => {
     let prismaService: PrismaService;
 
     const encryptedPassword = bcrypt.hashSync('password', auth.hashSalt);
-    const mockedUser = {
+    const mockedUser: UserModel = {
         userId: 1,
         email: 'abcdefg@test.com',
-        nickname: 'test',
         password: encryptedPassword,
         role: Role.USER,
         registeredAt: new Date('2023-05-07 03:33:00'),
@@ -98,6 +97,20 @@ describe('UserRepository', () => {
                 'password',
             );
             expect(result).toStrictEqual(mockedUser);
+        });
+    });
+
+    describe('softDelete', () => {
+        it('softDelete 가 정의되어 있다.', () => {
+            expect(userRepository.softDelete).toBeDefined();
+        });
+        it('user 의 deletedAt 에 날짜를 추가하여 리턴한다.', async () => {
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const mockedUserDelete = Object.assign({}, mockedUser);
+            mockedUserDelete.deletedAt = deletedAt;
+            prismaService.user.update = jest.fn().mockResolvedValue(mockedUserDelete);
+            const result = await userRepository.softDelete(1, deletedAt);
+            expect(result).toStrictEqual(mockedUserDelete);
         });
     });
 });

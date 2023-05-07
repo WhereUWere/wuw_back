@@ -2,10 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { ProfileRepository } from '../repository/profile.repository';
+import { Profile as ProfileModel } from '@prisma/client';
 
 describe('ProfileRepository', () => {
     let profileRepository: ProfileRepository;
     let prismaService: PrismaService;
+
+    const mockedProfile: ProfileModel = {
+        userId: 1,
+        nickname: 'test',
+        phoneNumber: null,
+        birthOfDate: null,
+        avatar: null,
+        bio: null,
+        createdAt: new Date('2023-05-07 03:33:00'),
+        updatedAt: new Date('2023-05-07 03:33:00'),
+        deletedAt: null,
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -52,6 +65,20 @@ describe('ProfileRepository', () => {
             prismaService.profile.findUnique = jest.fn().mockResolvedValue(null);
             const result = await profileRepository.findNicknameByUserId(1);
             expect(result).toBeNull();
+        });
+    });
+
+    describe('softDelete', () => {
+        it('softDelete 가 정의되어 있다.', () => {
+            expect(profileRepository.softDelete).toBeDefined();
+        });
+        it('profile 의 deletedAt 에 날짜를 추가하여 리턴한다.', async () => {
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const mockedProfileDelete = Object.assign({}, mockedProfile);
+            mockedProfileDelete.deletedAt = deletedAt;
+            prismaService.profile.update = jest.fn().mockResolvedValue(mockedProfileDelete);
+            const result = await profileRepository.softDelete(1, deletedAt);
+            expect(result).toStrictEqual(mockedProfileDelete);
         });
     });
 });
