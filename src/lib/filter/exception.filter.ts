@@ -18,7 +18,7 @@ export class AllExceptionFilter implements ExceptionFilter {
         res.timestamp = format(new Date(), DateFormatEnum.Datetime);
         res.path = httpAdapter.getRequestUrl(ctx.getRequest());
 
-        if (api.nodeEnv === 'development') console.log(exception);
+        if (api.nodeEnv === 'development') console.error(exception);
 
         httpAdapter.reply(
             ctx.getResponse(),

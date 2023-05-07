@@ -31,3 +31,27 @@ export class NicknameNotFoundException extends BaseException {
         super(AuthExceptionCodeEnum.NicknameNotFound, HttpStatus.NOT_FOUND);
     }
 }
+
+export class JwtInvalidTokenException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtInvalidToken, HttpStatus.UNAUTHORIZED);
+    }
+}
+
+export class JwtUserNotFoundException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtUserNotFound, HttpStatus.NOT_FOUND);
+    }
+}
+
+export class JwtExpiredException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtExpired, HttpStatus.UNAUTHORIZED);
+    }
+}
+
+export class JwtInvalidSignatureException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtInvalidSignature, HttpStatus.UNAUTHORIZED);
+    }
+}

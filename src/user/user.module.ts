@@ -9,5 +9,6 @@ import { ProfileRepository } from './repository/profile.repository';
     imports: [PrismaModule],
     controllers: [UserController],
     providers: [UserService, UserRepository, ProfileRepository],
+    exports: [UserRepository],
 })
 export class UserModule {}

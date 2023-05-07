@@ -54,21 +54,6 @@ describe('UserRepository', () => {
         });
     });
 
-    describe('createAndSave', () => {
-        it('createAndSave 가 정의되어 있다.', () => {
-            expect(userRepository.createAndSave).toBeDefined();
-        });
-        it('생성된 user 를 리턴한다.', async () => {
-            prismaService.user.create = jest.fn().mockResolvedValue(mockedUser);
-            const result = await userRepository.createAndSave(
-                'abcdefg@test.com',
-                'test',
-                'password',
-            );
-            expect(result).toStrictEqual(mockedUser);
-        });
-    });
-
     describe('findUserByEmail', () => {
         it('findUserByEmail 이 정의되어 있다.', () => {
             expect(userRepository.findUserByEmail).toBeDefined();
@@ -82,6 +67,37 @@ describe('UserRepository', () => {
             prismaService.user.findUnique = jest.fn().mockResolvedValue(null);
             const result = await userRepository.findUserByEmail('abcdefg@test.com');
             expect(result).toBeNull();
+        });
+    });
+
+    describe('findUserByUserId', () => {
+        it('findUserByUserId 가 정의되어 있다.', () => {
+            expect(userRepository.findUserByUserId).toBeDefined();
+        });
+        it('userId 가 존재한다면, user 를 리턴한다.', async () => {
+            prismaService.user.findUnique = jest.fn().mockResolvedValue(mockedUser);
+            const result = await userRepository.findUserByUserId(1);
+            expect(result).toStrictEqual(mockedUser);
+        });
+        it('userId 가 존재하지 않는다면, null 을 리턴한다.', async () => {
+            prismaService.user.findUnique = jest.fn().mockResolvedValue(null);
+            const result = await userRepository.findUserByUserId(1);
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('createAndSave', () => {
+        it('createAndSave 가 정의되어 있다.', () => {
+            expect(userRepository.createAndSave).toBeDefined();
+        });
+        it('생성된 user 를 리턴한다.', async () => {
+            prismaService.user.create = jest.fn().mockResolvedValue(mockedUser);
+            const result = await userRepository.createAndSave(
+                'abcdefg@test.com',
+                'test',
+                'password',
+            );
+            expect(result).toStrictEqual(mockedUser);
         });
     });
 });

@@ -11,6 +11,7 @@ import { auth } from 'src/config/authConfig';
     imports: [
         PrismaModule,
         JwtModule.register({
+            global: true,
             secret: auth.jwtSecret,
             signOptions: { expiresIn: auth.jwtExpireTime },
         }),

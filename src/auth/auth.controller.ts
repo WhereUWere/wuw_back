@@ -52,6 +52,7 @@ export class AuthController {
         endPoint: '/signin',
         summary: '로그인',
         type: PostSignInRes,
+        status: HttpStatus.OK,
     })
     @ApiBody({ type: PostSignInReq })
     async signIn(@Body() req: PostSignInReq): Promise<PostSignInRes> {
