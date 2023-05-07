@@ -67,18 +67,4 @@ describe('ProfileRepository', () => {
             expect(result).toBeNull();
         });
     });
-
-    describe('softDelete', () => {
-        it('softDelete 가 정의되어 있다.', () => {
-            expect(profileRepository.softDelete).toBeDefined();
-        });
-        it('profile 의 deletedAt 에 날짜를 추가하여 리턴한다.', async () => {
-            const deletedAt = new Date('2023-05-07 15:36:00');
-            const mockedProfileDelete = Object.assign({}, mockedProfile);
-            mockedProfileDelete.deletedAt = deletedAt;
-            prismaService.profile.update = jest.fn().mockResolvedValue(mockedProfileDelete);
-            const result = await profileRepository.softDelete(1, deletedAt);
-            expect(result).toStrictEqual(mockedProfileDelete);
-        });
-    });
 });

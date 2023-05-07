@@ -15,6 +15,7 @@ import {
     NicknameExistsException,
     NicknameNotFoundException,
     NotAuthenticatedException,
+    UserNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
 import { Profile as ProfileModel, Role, User as UserModel } from '@prisma/client';
@@ -23,7 +24,6 @@ import { PostSignInReq } from '../dto/request/post.signin.req';
 import { PostSignInRes } from '../dto/response/post.signin.res';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
-import { UserEntity } from 'src/user/entities/user.entity';
 import { PostBreakOutReq } from '../dto/request/post.breakout.req';
 import { PostBreakOutRes } from '../dto/response/post.breakout.res';
 
@@ -146,6 +146,7 @@ describe('AuthService', () => {
             const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
             const resDto = new PostSignUpRes('test', jwtToken);
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => jwtToken);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue(null);
             userRepository.createAndSave = jest.fn().mockResolvedValue(mockedUser);
@@ -181,6 +182,7 @@ describe('AuthService', () => {
             const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
             const resDto = new PostSignInRes('test', jwtToken);
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => jwtToken);
             userRepository.findUserByEmail = jest.fn().mockResolvedValue(mockedUser);
             profileRepository.findNicknameByUserId = jest
                 .fn()
@@ -194,25 +196,27 @@ describe('AuthService', () => {
         it('breakOut 이 정의되어 있다.', () => {
             expect(authService.breakOut).toBeDefined();
         });
+        it('user 가 존재하지 않을 경우, UserNotFoundException 발생', async () => {
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const reqDto = new PostBreakOutReq('password');
+            userRepository.findUserByUserId = jest.fn().mockResolvedValue(null);
+            const result = async () => await authService.breakOut(1, reqDto, deletedAt);
+            await expect(result).rejects.toThrowError(new UserNotFoundException());
+        });
         it('password 가 일치하지 않을 경우, NotAuthenticatedException 발생', async () => {
             const deletedAt = new Date('2023-05-07 15:36:00');
-            const userEntity = new UserEntity(mockedUser);
             const reqDto = new PostBreakOutReq('wrongPassword');
-            const result = async () => await authService.breakOut(userEntity, reqDto, deletedAt);
+            userRepository.findUserByUserId = jest.fn().mockResolvedValue(mockedUser);
+            const result = async () => await authService.breakOut(1, reqDto, deletedAt);
             await expect(result).rejects.toThrowError(new NotAuthenticatedException());
         });
         it('breakOut 이 성공하면, 탈퇴 날짜를 리턴한다.', async () => {
             const deletedAt = new Date('2023-05-07 15:36:00');
-            const mockedUserDelete = Object.assign({}, mockedUser);
-            const mockedProfileDelete = Object.assign({}, mockedProfile);
-            mockedUserDelete.deletedAt = deletedAt;
-            mockedProfileDelete.deletedAt = deletedAt;
-            const userEntity = new UserEntity(mockedUser);
             const reqDto = new PostBreakOutReq('password');
             const resDto = new PostBreakOutRes(deletedAt);
-            userRepository.softDelete = jest.fn().mockResolvedValue(mockedUserDelete);
-            profileRepository.softDelete = jest.fn().mockResolvedValue(mockedProfileDelete);
-            const result = await authService.breakOut(userEntity, reqDto, deletedAt);
+            userRepository.findUserByUserId = jest.fn().mockResolvedValue(mockedUser);
+            userRepository.hardDelete = jest.fn().mockResolvedValue(mockedUser);
+            const result = await authService.breakOut(1, reqDto, deletedAt);
             expect(result).toStrictEqual(resDto);
         });
     });

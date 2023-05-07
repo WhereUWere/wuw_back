@@ -46,4 +46,12 @@ export class UserRepository {
             },
         });
     }
+
+    async hardDelete(userId: number): Promise<UserModel> {
+        return await this.prisma.user.delete({
+            where: {
+                userId,
+            },
+        });
+    }
 }

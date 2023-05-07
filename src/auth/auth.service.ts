@@ -13,6 +13,7 @@ import {
     NicknameExistsException,
     NicknameNotFoundException,
     NotAuthenticatedException,
+    UserNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
@@ -20,6 +21,8 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayloadReq } from './dto/request/jwt.payload.req';
 import { PostSignInReq } from './dto/request/post.signin.req';
 import { PostSignInRes } from './dto/response/post.signin.res';
+import { PostBreakOutReq } from './dto/request/post.breakout.req';
+import { PostBreakOutRes } from './dto/response/post.breakout.res';
 
 @Injectable()
 export class AuthService {
@@ -69,6 +72,17 @@ export class AuthService {
 
         const jwtToken = await this.createJwtToken(userExists.userId);
         return new PostSignInRes(profile.nickname, jwtToken);
+    }
+
+    async breakOut(userId: number, req: PostBreakOutReq, date: Date): Promise<PostBreakOutRes> {
+        const userExists = await this.userRepository.findUserByUserId(userId);
+        if (!userExists) throw new UserNotFoundException();
+        const isMatch = await bcrypt.compare(req.password, userExists.password);
+        if (!isMatch) throw new NotAuthenticatedException();
+
+        await this.userRepository.hardDelete(userId);
+
+        return new PostBreakOutRes(date);
     }
 
     private async createJwtToken(userId: number): Promise<string> {

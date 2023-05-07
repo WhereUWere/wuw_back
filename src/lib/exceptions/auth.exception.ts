@@ -55,3 +55,9 @@ export class JwtInvalidSignatureException extends BaseException {
         super(AuthExceptionCodeEnum.JwtInvalidSignature, HttpStatus.UNAUTHORIZED);
     }
 }
+
+export class UserNotFoundException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.UserNotFound, HttpStatus.NOT_FOUND);
+    }
+}

@@ -16,4 +16,5 @@ export enum AuthExceptionCodeEnum {
     JwtUserNotFound = '0007',
     JwtExpired = '0008',
     JwtInvalidSignature = '0009',
+    UserNotFound = '0010',
 }

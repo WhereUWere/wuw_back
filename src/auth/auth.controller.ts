@@ -1,6 +1,6 @@
 import { Body, Controller, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Post } from 'src/lib/utils/decorators/http-method.decorator';
 import { PostEmailRes } from './dto/response/post.email.res';
 import { PostEmailReq } from './dto/request/post.email.req';
@@ -10,6 +10,10 @@ import { PostSignUpRes } from './dto/response/post.signup.res';
 import { PostSignUpReq } from './dto/request/post.signup.req';
 import { PostSignInRes } from './dto/response/post.signin.res';
 import { PostSignInReq } from './dto/request/post.signin.req';
+import { PostBreakOutRes } from './dto/response/post.breakout.res';
+import { PostBreakOutReq } from './dto/request/post.breakout.req';
+import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
+import { now } from 'src/lib/utils/dates/date.utils';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -57,5 +61,21 @@ export class AuthController {
     @ApiBody({ type: PostSignInReq })
     async signIn(@Body() req: PostSignInReq): Promise<PostSignInRes> {
         return await this.authService.signIn(req);
+    }
+
+    @Post({
+        endPoint: '/breakout',
+        summary: '회원탈퇴',
+        type: PostBreakOutRes,
+        status: HttpStatus.OK,
+    })
+    @ApiBody({ type: PostBreakOutReq })
+    @ApiSecurity('Authorization')
+    async breakOut(
+        @AuthUser('userId') userId: number,
+        @Body() req: PostBreakOutReq,
+        date: Date = now(),
+    ): Promise<PostBreakOutRes> {
+        return await this.authService.breakOut(userId, req, date);
     }
 }

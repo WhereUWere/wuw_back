@@ -15,24 +15,10 @@ import { PostSignInReq } from '../dto/request/post.signin.req';
 import { PostSignInRes } from '../dto/response/post.signin.res';
 import { PostBreakOutReq } from '../dto/request/post.breakout.req';
 import { PostBreakOutRes } from '../dto/response/post.breakout.res';
-import * as bcrypt from 'bcrypt';
-import { auth } from 'src/config/authConfig';
-import { Role, User as UserModel } from '@prisma/client';
-import { UserEntity } from 'src/user/entities/user.entity';
 
 describe('AuthController', () => {
     let authController: AuthController;
     let authService: AuthService;
-    const encryptedPassword = bcrypt.hashSync('password', auth.hashSalt);
-    const mockedUser: UserModel = {
-        userId: 1,
-        email: 'abcdefg@test.com',
-        password: encryptedPassword,
-        role: Role.USER,
-        registeredAt: new Date('2023-05-07 03:33:00'),
-        updatedAt: new Date('2023-05-07 03:33:00'),
-        deletedAt: null,
-    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -111,11 +97,10 @@ describe('AuthController', () => {
         });
         it('Service 의 반환값을 리턴한다.', async () => {
             const deletedAt = new Date('2023-05-07 15:36:00');
-            const userEntity = new UserEntity(mockedUser);
             const reqDto = new PostBreakOutReq('password');
             const resDto = new PostBreakOutRes(deletedAt);
             authService.breakOut = jest.fn().mockResolvedValue(resDto);
-            const result = await authController.breakOut(userEntity, reqDto, deletedAt);
+            const result = await authController.breakOut(1, reqDto, deletedAt);
             expect(result).toBe(resDto);
         });
     });
