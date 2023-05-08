@@ -5,3 +5,9 @@ export interface ApiConfigProps {
     globalPrefix: string;
     swaggerPrefix: string;
 }
+
+export interface AuthConfigProps {
+    jwtSecret: string;
+    jwtExpireTime: string;
+    hashSalt: number;
+}

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IBase } from '../interface/base.interface';
+import { IBase } from '../interfaces/base.interface';
 
 export class BaseEntity implements IBase {
     @ApiProperty()
