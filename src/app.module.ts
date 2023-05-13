@@ -6,8 +6,6 @@ import * as Joi from 'joi';
 import { JwtMiddleware } from './lib/middlewares/jwt.middleware';
 import { AuthController } from './auth/auth.controller';
 import { UserController } from './user/user.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { auth } from './config/authConfig';
 
 @Module({
     imports: [
@@ -21,8 +19,9 @@ import { auth } from './config/authConfig';
                 DB_USER: Joi.string().required(),
                 DB_PASSWORD: Joi.string().required(),
                 DB_PORT: Joi.string().required(),
-                DB_URL: Joi.string().required(),
                 DB_NAME: Joi.string().required(),
+                DB_HOST: Joi.string().required(),
+                DB_URL: Joi.string().required(),
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRE_TIME: Joi.string().required(),
                 HASH_SALT: Joi.number().required(),

@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+    api:
+        container_name: api
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
+        env_file:
+            - .env
+        restart: always
+        volumes:
+            - ./logs:/app/logs
+        ports:
+            - '3000:3000'
