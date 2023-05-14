@@ -5,5 +5,5 @@ export const api: ApiConfigProps = {
     apiVersion: process.env.API_VERSION as string,
     apiPort: parseInt(process.env.API_PORT as string),
     globalPrefix: `/api/${process.env.API_VERSION}` as string,
-    swaggerPrefix: process.env.SWAGGER_PREFIX as string,
+    swaggerPrefix: `/api/${process.env.API_VERSION}/${process.env.SWAGGER_PREFIX}` as string,
 };
