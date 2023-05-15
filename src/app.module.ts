@@ -13,6 +13,7 @@ import { UserController } from './user/user.controller';
             isGlobal: true,
             validationSchema: Joi.object({
                 NODE_ENV: Joi.string().required(),
+                API_HOST: Joi.string().required(),
                 API_VERSION: Joi.string().required(),
                 API_PORT: Joi.string().required(),
                 SWAGGER_PREFIX: Joi.string().required(),
