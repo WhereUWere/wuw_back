@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+    proxy:
+        container_name: proxy
+        image: nginx:stable-alpine3.17
+        restart: always
+        ports:
+            - '80:80'
+        volumes:
+            - ./nginx/templates/:/etc/nginx/templates/
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - api
+        env_file:
+            - ./.env
+
+    api:
+        container_name: api
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
+        env_file:
+            - .env
+        restart: always
+        volumes:
+            - ./logs:/app/logs
+        ports:
+            - ${API_PORT}:${API_PORT}

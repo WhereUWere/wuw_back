@@ -74,6 +74,10 @@ export class AuthService {
         return new PostSignInRes(profile.nickname, jwtToken);
     }
 
+    /**
+     * @todo Prisma soft delete middleware 적용
+     * @legacy soft delete 로 수정될 예정
+     */
     async breakOut(userId: number, req: PostBreakOutReq, date: Date): Promise<PostBreakOutRes> {
         const userExists = await this.userRepository.findUserByUserId(userId);
         if (!userExists) throw new UserNotFoundException();
