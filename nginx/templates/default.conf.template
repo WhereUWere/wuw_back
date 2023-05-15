@@ -1,0 +1,11 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name  ${API_HOST} www.${API_HOST};
+    
+    server_tokens off;
+
+    location /api/${API_VERSION} {
+        proxy_pass http://api;
+    }
+}
