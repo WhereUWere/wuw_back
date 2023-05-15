@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+    proxy:
+        container_name: proxy
+        image: nginx:stable-alpine3.17
+        restart: always
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./nginx/nginx.conf.init:/etc/nginx/nginx.conf
+            - ./certbot:/etc/letsencrypt:ro
+            - ./certbot/www:/var/www/certbot:ro
+        env_file:
+            - ./.env
+
+    certbot:
+        container_name: certbot
+        image: certbot/certbot:latest
+        volumes:
+            - ./certbot:/etc/letsencrypt:rw
+            - ./certbot/logs:/var/log/letsencrypt:rw
+            - ./certbot/www:/var/www/certbot:rw
+        command: certonly --webroot --webroot-path=/var/www/certbot --email hoo8799@gmail.com --agree-tos --no-eff-email --keep-until-expiring -d ${API_HOST} -d www.${API_HOST}
