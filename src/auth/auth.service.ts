@@ -10,8 +10,6 @@ import { PostSignUpRes } from './dto/response/post.signup.res';
 import {
     EmailExistsException,
     EmailNotFoundException,
-    NicknameExistsException,
-    NicknameNotFoundException,
     NotAuthenticatedException,
     UserNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
@@ -23,6 +21,10 @@ import { PostSignInReq } from './dto/request/post.signin.req';
 import { PostSignInRes } from './dto/response/post.signin.res';
 import { PostBreakOutReq } from './dto/request/post.breakout.req';
 import { PostBreakOutRes } from './dto/response/post.breakout.res';
+import {
+    NicknameExistsException,
+    NicknameNotFoundException,
+} from 'src/lib/exceptions/profile.exception';
 
 @Injectable()
 export class AuthService {
