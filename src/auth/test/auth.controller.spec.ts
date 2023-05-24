@@ -2,9 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UserRepository } from 'src/user/repository/user.repository';
-import { ProfileRepository } from 'src/user/repository/profile.repository';
 import { PostEmailReq } from '../dto/request/post.email.req';
 import { PostEmailRes } from '../dto/response/post.email.res';
 import { PostNicknameReq } from '../dto/request/post.nickname.req';
@@ -23,12 +20,7 @@ describe('AuthController', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AuthController],
-            providers: [
-                { provide: AuthService, useValue: createMock<AuthService>() },
-                { provide: UserRepository, useValue: createMock<UserRepository>() },
-                { provide: ProfileRepository, useValue: createMock<ProfileRepository>() },
-                { provide: PrismaService, useValue: createMock<PrismaService>() },
-            ],
+            providers: [{ provide: AuthService, useValue: createMock<AuthService>() }],
         }).compile();
 
         authController = module.get<AuthController>(AuthController);

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../auth.service';
 import { UserRepository } from 'src/user/repository/user.repository';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { createMock } from '@golevelup/ts-jest';
 import { PostEmailReq } from '../dto/request/post.email.req';
 import { PostEmailRes } from '../dto/response/post.email.res';
@@ -12,13 +11,12 @@ import { PostSignUpReq } from '../dto/request/post.signup.req';
 import {
     EmailExistsException,
     EmailNotFoundException,
-    NicknameExistsException,
     NicknameNotFoundException,
     NotAuthenticatedException,
     UserNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
-import { Profile as ProfileModel, Role, User as UserModel } from '@prisma/client';
+import { Role, User as UserModel } from '@prisma/client';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PostSignInReq } from '../dto/request/post.signin.req';
 import { PostSignInRes } from '../dto/response/post.signin.res';
@@ -26,6 +24,7 @@ import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
 import { PostBreakOutReq } from '../dto/request/post.breakout.req';
 import { PostBreakOutRes } from '../dto/response/post.breakout.res';
+import { NicknameExistsException } from 'src/lib/exceptions/profile.exception';
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -43,17 +42,6 @@ describe('AuthService', () => {
         updatedAt: new Date('2023-05-07 03:33:00'),
         deletedAt: null,
     };
-    const mockedProfile: ProfileModel = {
-        userId: 1,
-        nickname: 'test',
-        phoneNumber: null,
-        birthOfDate: null,
-        avatar: null,
-        bio: null,
-        createdAt: new Date('2023-05-07 03:33:00'),
-        updatedAt: new Date('2023-05-07 03:33:00'),
-        deletedAt: null,
-    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -67,7 +55,6 @@ describe('AuthService', () => {
                 AuthService,
                 { provide: UserRepository, useValue: createMock<UserRepository>() },
                 { provide: ProfileRepository, useValue: createMock<ProfileRepository>() },
-                { provide: PrismaService, useValue: createMock<PrismaService>() },
             ],
         }).compile();
 
