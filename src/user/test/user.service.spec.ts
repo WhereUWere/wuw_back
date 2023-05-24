@@ -7,6 +7,7 @@ import { Profile as ProfileModel } from '@prisma/client';
 import { GetProfileRes } from '../dto/response/get.profile.res';
 import { PatchProfileReq } from '../dto/request/patch.profile.req';
 import { PatchProfileRes } from '../dto/response/patch.profile.res';
+import { ProfileNotFoundException } from 'src/lib/exceptions/profile.exception';
 
 describe('UserService', () => {
     let userService: UserService;

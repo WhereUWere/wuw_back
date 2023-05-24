@@ -32,19 +32,19 @@ export class GetProfileRes {
         return this._nickname;
     }
 
-    @ApiProperty({ nullable: true })
+    @ApiProperty({ nullable: true, type: String })
     @Expose()
     get phoneNumber(): string | null {
         return this._phoneNumber;
     }
 
-    @ApiProperty({ nullable: true })
+    @ApiProperty({ nullable: true, type: String })
     @Expose()
     get birthOfDate(): string | null {
         return this._birthOfDate;
     }
 
-    @ApiProperty({ nullable: true })
+    @ApiProperty({ nullable: true, type: String })
     @Expose()
     get bio(): string | null {
         return this._bio;

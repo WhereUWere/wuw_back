@@ -16,7 +16,7 @@ import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
 import { now } from 'src/lib/utils/dates/date.utils';
 
 @Controller('auth')
-@ApiTags('Auth')
+@ApiTags('Auth API')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 

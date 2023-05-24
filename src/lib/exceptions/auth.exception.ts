@@ -20,12 +20,6 @@ export class EmailExistsException extends BaseException {
     }
 }
 
-export class NicknameNotFoundException extends BaseException {
-    constructor() {
-        super(AuthExceptionCodeEnum.NicknameNotFound, HttpStatus.NOT_FOUND);
-    }
-}
-
 export class JwtInvalidTokenException extends BaseException {
     constructor() {
         super(AuthExceptionCodeEnum.JwtInvalidToken, HttpStatus.UNAUTHORIZED);

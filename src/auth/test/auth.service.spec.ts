@@ -11,7 +11,6 @@ import { PostSignUpReq } from '../dto/request/post.signup.req';
 import {
     EmailExistsException,
     EmailNotFoundException,
-    NicknameNotFoundException,
     NotAuthenticatedException,
     UserNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
@@ -24,7 +23,10 @@ import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
 import { PostBreakOutReq } from '../dto/request/post.breakout.req';
 import { PostBreakOutRes } from '../dto/response/post.breakout.res';
-import { NicknameExistsException } from 'src/lib/exceptions/profile.exception';
+import {
+    NicknameExistsException,
+    NicknameNotFoundException,
+} from 'src/lib/exceptions/profile.exception';
 
 describe('AuthService', () => {
     let authService: AuthService;

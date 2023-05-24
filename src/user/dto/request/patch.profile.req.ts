@@ -43,17 +43,17 @@ export class PatchProfileReq {
         return this._nickname;
     }
 
-    @ApiProperty({ required: true, nullable: true })
+    @ApiProperty({ required: true, nullable: true, type: String })
     get phoneNumber(): string | null {
         return this._phoneNumber;
     }
 
-    @ApiProperty({ required: true, nullable: true })
+    @ApiProperty({ required: true, nullable: true, type: String })
     get birthOfDate(): string | null {
         return this._birthOfDate;
     }
 
-    @ApiProperty({ required: true, nullable: true })
+    @ApiProperty({ required: true, nullable: true, type: String })
     get bio(): string | null {
         return this._bio;
     }
