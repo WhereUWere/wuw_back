@@ -23,8 +23,8 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "up:docker:db": "docker-compose -f docker-compose.db.yml up -d",
-        "down:docker:db": "docker-compose -f docker-compose.db.yml down"
+        "up:docker:db": "docker-compose -f db/docker-compose.db.yml up -d",
+        "down:docker:db": "docker-compose -f db/docker-compose.db.yml down"
     },
     "lint-staged": {
         "{src,test}/**/*.{js,ts}": [
