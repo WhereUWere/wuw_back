@@ -10,11 +10,15 @@ export enum AuthExceptionCodeEnum {
     EmailNotFound = '0001',
     NotAuthenticated = '0002',
     EmailExists = '0003',
-    NicknameExists = '0004',
-    NicknameNotFound = '0005',
-    JwtInvalidToken = '0006',
-    JwtUserNotFound = '0007',
-    JwtExpired = '0008',
-    JwtInvalidSignature = '0009',
-    UserNotFound = '0010',
+    JwtInvalidToken = '0004',
+    JwtUserNotFound = '0005',
+    JwtExpired = '0006',
+    JwtInvalidSignature = '0007',
+    UserNotFound = '0008',
+}
+
+export enum ProfileExceptionCodeEnum {
+    NicknameNotFound = '0100',
+    NicknameExists = '0101',
+    ProfileNotFound = '0102',
 }
