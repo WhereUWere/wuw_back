@@ -63,7 +63,7 @@ describe('AuthController', () => {
         });
         it('Service 의 반환값을 리턴한다.', async () => {
             const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
-            const resDto = new PostSignUpRes('test', 'testJwtToken');
+            const resDto = new PostSignUpRes('test', 'testAccessToken');
             authService.signUp = jest.fn().mockResolvedValue(resDto);
             const result = await authController.signUp(reqDto);
             expect(result).toBe(resDto);
@@ -76,7 +76,7 @@ describe('AuthController', () => {
         });
         it('Service 의 반환값을 리턴한다.', async () => {
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
-            const resDto = new PostSignInRes('test', 'testJwtToken');
+            const resDto = new PostSignInRes('test', 'testAccessToken');
             authService.signIn = jest.fn().mockResolvedValue(resDto);
             const result = await authController.signIn(reqDto);
             expect(result).toBe(resDto);

@@ -131,11 +131,11 @@ describe('AuthService', () => {
             const result = async () => await authService.signUp(reqDto);
             await expect(result).rejects.toThrowError(new NicknameExistsException());
         });
-        it('signUp 이 성공하면, nickname 과 jwtToken 을 리턴한다.', async () => {
-            const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
+        it('signUp 이 성공하면, nickname 과 accessToken 을 리턴한다.', async () => {
+            const accessToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
-            const resDto = new PostSignUpRes('test', jwtToken);
-            jwtService.signAsync = jest.fn().mockImplementationOnce(() => jwtToken);
+            const resDto = new PostSignUpRes('test', accessToken);
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue(null);
             userRepository.createAndSave = jest.fn().mockResolvedValue(mockedUser);
@@ -167,11 +167,11 @@ describe('AuthService', () => {
             const result = async () => await authService.signIn(reqDto);
             await expect(result).rejects.toThrowError(new NicknameNotFoundException());
         });
-        it('signIn 이 성공하면, nickname 과 jwtToken 을 리턴한다.', async () => {
-            const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
+        it('signIn 이 성공하면, nickname 과 accessToken 을 리턴한다.', async () => {
+            const accessToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
-            const resDto = new PostSignInRes('test', jwtToken);
-            jwtService.signAsync = jest.fn().mockImplementationOnce(() => jwtToken);
+            const resDto = new PostSignInRes('test', accessToken);
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
             userRepository.findUserByEmail = jest.fn().mockResolvedValue(mockedUser);
             profileRepository.findNicknameByUserId = jest
                 .fn()

@@ -58,9 +58,9 @@ export class AuthService {
             encryptedPassword,
         );
 
-        const jwtToken = await this.createJwtToken(newUser.userId);
+        const accessToken = await this.createAccessToken(newUser.userId);
 
-        return new PostSignUpRes(req.nickname, jwtToken);
+        return new PostSignUpRes(req.nickname, accessToken);
     }
 
     async signIn(req: PostSignInReq): Promise<PostSignInRes> {
@@ -72,8 +72,8 @@ export class AuthService {
         const profile = await this.profileRepository.findNicknameByUserId(userExists.userId);
         if (!profile) throw new NicknameNotFoundException();
 
-        const jwtToken = await this.createJwtToken(userExists.userId);
-        return new PostSignInRes(profile.nickname, jwtToken);
+        const accessToken = await this.createAccessToken(userExists.userId);
+        return new PostSignInRes(profile.nickname, accessToken);
     }
 
     /**
@@ -91,7 +91,7 @@ export class AuthService {
         return new PostBreakOutRes(date);
     }
 
-    private async createJwtToken(userId: number): Promise<string> {
+    private async createAccessToken(userId: number): Promise<string> {
         const jwtPayload = Object.assign({}, new JwtPayloadReq(userId));
         return await this.jwtService.signAsync(jwtPayload);
     }
