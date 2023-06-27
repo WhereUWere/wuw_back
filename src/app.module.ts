@@ -26,6 +26,8 @@ import { UserController } from './user/user.controller';
                 JWT_SECRET: Joi.string().required(),
                 JWT_EXPIRE_TIME: Joi.string().required(),
                 HASH_SALT: Joi.number().required(),
+                KAKAO_SERVER_URL: Joi.string().required(),
+                HTTP_TIMEOUT: Joi.number().required(),
             }),
         }),
         UserModule,
