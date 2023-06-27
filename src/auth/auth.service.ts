@@ -121,7 +121,7 @@ export class AuthService {
         return encryptedPassword;
     }
 
-    private async getUserEmailByKakao(kakaoAccessToken: string): Promise<string> {
+    private async getUserEmailByKakao(kakaoAccessToken: string): Promise<string | undefined> {
         try {
             const { data } = await lastValueFrom(
                 this.httpService.get<IReadKakaoEmail>(auth.kakaoServerUrl, {
