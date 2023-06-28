@@ -11,6 +11,7 @@ import { PostSignUpReq } from '../dto/request/post.signup.req';
 import {
     EmailExistsException,
     EmailNotFoundException,
+    KakaoEmailNotFoundException,
     NotAuthenticatedException,
     UserNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
@@ -27,6 +28,9 @@ import {
     NicknameExistsException,
     NicknameNotFoundException,
 } from 'src/lib/exceptions/profile.exception';
+import { HttpService } from '@nestjs/axios';
+import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
+import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -57,6 +61,7 @@ describe('AuthService', () => {
                 AuthService,
                 { provide: UserRepository, useValue: createMock<UserRepository>() },
                 { provide: ProfileRepository, useValue: createMock<ProfileRepository>() },
+                { provide: HttpService, useValue: createMock<HttpService> },
             ],
         }).compile();
 
@@ -131,11 +136,11 @@ describe('AuthService', () => {
             const result = async () => await authService.signUp(reqDto);
             await expect(result).rejects.toThrowError(new NicknameExistsException());
         });
-        it('signUp 이 성공하면, nickname 과 jwtToken 을 리턴한다.', async () => {
-            const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
+        it('signUp 이 성공하면, nickname 과 accessToken 을 리턴한다.', async () => {
+            const accessToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
-            const resDto = new PostSignUpRes('test', jwtToken);
-            jwtService.signAsync = jest.fn().mockImplementationOnce(() => jwtToken);
+            const resDto = new PostSignUpRes('test', accessToken);
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue(null);
             userRepository.createAndSave = jest.fn().mockResolvedValue(mockedUser);
@@ -167,16 +172,54 @@ describe('AuthService', () => {
             const result = async () => await authService.signIn(reqDto);
             await expect(result).rejects.toThrowError(new NicknameNotFoundException());
         });
-        it('signIn 이 성공하면, nickname 과 jwtToken 을 리턴한다.', async () => {
-            const jwtToken = await jwtService.signAsync({ userId: mockedUser.userId });
+        it('signIn 이 성공하면, nickname 과 accessToken 을 리턴한다.', async () => {
+            const accessToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
-            const resDto = new PostSignInRes('test', jwtToken);
-            jwtService.signAsync = jest.fn().mockImplementationOnce(() => jwtToken);
+            const resDto = new PostSignInRes('test', accessToken);
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
             userRepository.findUserByEmail = jest.fn().mockResolvedValue(mockedUser);
             profileRepository.findNicknameByUserId = jest
                 .fn()
                 .mockResolvedValue({ nickname: 'test' });
             const result = await authService.signIn(reqDto);
+            expect(result).toStrictEqual(resDto);
+        });
+    });
+
+    describe('signInWithKakao', () => {
+        let getUserEmailByKakaoMock: any;
+
+        beforeEach(() => {
+            getUserEmailByKakaoMock = jest.spyOn(
+                AuthService.prototype as any,
+                'getUserEmailByKakao',
+            );
+        });
+
+        it('signInWithKakao 가 정의되어 있다.', () => {
+            expect(authService.signInWithKakao).toBeDefined();
+        });
+        it('카카오에 등록된 회원 이메일이 없을 경우, KakaoEmailNotFoundException 발생', async () => {
+            getUserEmailByKakaoMock.mockImplementation(() => undefined);
+            const reqDto = new PostSignInKakaoReq('testAccessToken');
+            const result = async () => await authService.signInWithKakao(reqDto);
+            await expect(result).rejects.toThrowError(new KakaoEmailNotFoundException());
+        });
+        it('카카오에 등록된 회원 이메일로 가입하지 않은 유저일 경우, 가입 여부와 이메일을 리턴한다.', async () => {
+            getUserEmailByKakaoMock.mockImplementation(() => 'test@kakao.com');
+            userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
+            const reqDto = new PostSignInKakaoReq('testAccessToken');
+            const resDto = new PostSignInKakaoRes(false, 'test@kakao.com');
+            const result = await authService.signInWithKakao(reqDto);
+            expect(result).toStrictEqual(resDto);
+        });
+        it('카카오에 등록된 회원 이메일로 가입한 유저일 경우, 가입 여부와 이메일, AccessToken 을 리턴한다.', async () => {
+            getUserEmailByKakaoMock.mockImplementation(() => 'test@kakao.com');
+            userRepository.findUserIdByEmail = jest.fn().mockResolvedValue({ userId: 1 });
+            const accessToken = await jwtService.signAsync({ userId: 1 });
+            const reqDto = new PostSignInKakaoReq('testAccessToken');
+            const resDto = new PostSignInKakaoRes(true, 'test@kakao.com', accessToken);
+            const result = await authService.signInWithKakao(reqDto);
             expect(result).toStrictEqual(resDto);
         });
     });

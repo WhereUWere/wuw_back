@@ -6,11 +6,11 @@ export class PostSignInRes {
     private readonly _nickname: string;
 
     @Exclude()
-    private readonly _jwtToken: string;
+    private readonly _accessToken: string;
 
-    constructor(nickname: string, jwtToken: string) {
+    constructor(nickname: string, accessToken: string) {
         this._nickname = nickname;
-        this._jwtToken = jwtToken;
+        this._accessToken = accessToken;
     }
 
     @ApiProperty()
@@ -21,7 +21,7 @@ export class PostSignInRes {
 
     @ApiProperty()
     @Expose()
-    get jwtToken(): string {
-        return this._jwtToken;
+    get accessToken(): string {
+        return this._accessToken;
     }
 }

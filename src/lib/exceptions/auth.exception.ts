@@ -49,3 +49,15 @@ export class UserNotFoundException extends BaseException {
         super(AuthExceptionCodeEnum.UserNotFound, HttpStatus.NOT_FOUND);
     }
 }
+
+export class KakaoAuthConflictException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.KakaoAuthConfilct, HttpStatus.CONFLICT);
+    }
+}
+
+export class KakaoEmailNotFoundException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.KakaoEmailNotFound, HttpStatus.NOT_FOUND);
+    }
+}

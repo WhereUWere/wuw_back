@@ -14,6 +14,8 @@ import { PostBreakOutRes } from './dto/response/post.breakout.res';
 import { PostBreakOutReq } from './dto/request/post.breakout.req';
 import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
 import { now } from 'src/lib/utils/dates/date.utils';
+import { PostSignInKakaoRes } from './dto/response/post.signin-kakao.res';
+import { PostSignInKakaoReq } from './dto/request/post.signin-kakao.req';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -61,6 +63,17 @@ export class AuthController {
     @ApiBody({ type: PostSignInReq })
     async signIn(@Body() req: PostSignInReq): Promise<PostSignInRes> {
         return await this.authService.signIn(req);
+    }
+
+    @Post({
+        endPoint: '/signin-kakao',
+        summary: '카카오로 시작하기',
+        type: PostSignInKakaoRes,
+        status: HttpStatus.OK,
+    })
+    @ApiBody({ type: PostSignInKakaoReq })
+    async signInWithKakao(@Body() req: PostSignInKakaoReq): Promise<PostSignInKakaoRes> {
+        return await this.authService.signInWithKakao(req);
     }
 
     @Post({

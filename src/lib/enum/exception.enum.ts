@@ -2,7 +2,7 @@ export enum UncatchedExceptionCodeEnum {
     UnCatched = '9999',
 }
 
-export enum ValidateExceptionCodeEunm {
+export enum ValidateExceptionCodeEnum {
     Failed = '0000',
 }
 
@@ -15,6 +15,8 @@ export enum AuthExceptionCodeEnum {
     JwtExpired = '0006',
     JwtInvalidSignature = '0007',
     UserNotFound = '0008',
+    KakaoAuthConfilct = '0009',
+    KakaoEmailNotFound = '0010',
 }
 
 export enum ProfileExceptionCodeEnum {

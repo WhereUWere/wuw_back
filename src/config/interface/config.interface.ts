@@ -10,4 +10,9 @@ export interface AuthConfigProps {
     jwtSecret: string;
     jwtExpireTime: string;
     hashSalt: number;
+    kakaoServerUrl: string;
+}
+
+export interface HttpConfigProps {
+    httpTimeout: number;
 }
