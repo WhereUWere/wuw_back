@@ -15,6 +15,7 @@ model User {
   registeredAt DateTime  @default(now()) @map("registered_at") @db.Timestamp(6)
   updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
   deletedAt    DateTime? @map("deleted_at")
+  refreshToken String?   @map("refresh_token") @db.Text
   profile      Profile?
 
   @@map("users")
@@ -26,11 +27,11 @@ model Profile {
   phoneNumber String?   @unique @map("phone_number") @db.VarChar(11)
   birthOfDate String?   @map("birth_of_date") @db.VarChar(8)
   avatar      String?   @db.VarChar(255)
-  bio         String?
+  bio         String?   @db.Text
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
   deletedAt   DateTime? @map("deleted_at")
-  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("profiles")
 }

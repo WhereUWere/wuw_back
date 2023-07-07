@@ -19,6 +19,7 @@ describe('UserRepository', () => {
         registeredAt: new Date('2023-05-07 03:33:00'),
         updatedAt: new Date('2023-05-07 03:33:00'),
         deletedAt: null,
+        refreshToken: 'testRefreshToken',
     };
 
     beforeEach(async () => {
