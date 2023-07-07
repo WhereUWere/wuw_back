@@ -12,11 +12,15 @@ export enum AuthExceptionCodeEnum {
     EmailExists = '0003',
     JwtInvalidToken = '0004',
     JwtUserNotFound = '0005',
-    JwtExpired = '0006',
-    JwtInvalidSignature = '0007',
+    JwtAccessTokenExpired = '0006',
+    JwtAccessTokenInvalidSignature = '0007',
     UserNotFound = '0008',
     KakaoAuthConfilct = '0009',
     KakaoEmailNotFound = '0010',
+    CreateAccessTokenConflict = '0011',
+    CreateRefreshTokenConflict = '0012',
+    JwtRefreshTokenExpired = '0013',
+    JwtRefreshTokenInvalidSignature = '0014',
 }
 
 export enum ProfileExceptionCodeEnum {

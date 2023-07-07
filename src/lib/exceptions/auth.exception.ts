@@ -32,15 +32,15 @@ export class JwtUserNotFoundException extends BaseException {
     }
 }
 
-export class JwtExpiredException extends BaseException {
+export class JwtAccessTokenExpiredException extends BaseException {
     constructor() {
-        super(AuthExceptionCodeEnum.JwtExpired, HttpStatus.UNAUTHORIZED);
+        super(AuthExceptionCodeEnum.JwtAccessTokenExpired, HttpStatus.UNAUTHORIZED);
     }
 }
 
-export class JwtInvalidSignatureException extends BaseException {
+export class JwtAccessTokenInvalidSignatureException extends BaseException {
     constructor() {
-        super(AuthExceptionCodeEnum.JwtInvalidSignature, HttpStatus.UNAUTHORIZED);
+        super(AuthExceptionCodeEnum.JwtAccessTokenInvalidSignature, HttpStatus.UNAUTHORIZED);
     }
 }
 
@@ -59,5 +59,29 @@ export class KakaoAuthConflictException extends BaseException {
 export class KakaoEmailNotFoundException extends BaseException {
     constructor() {
         super(AuthExceptionCodeEnum.KakaoEmailNotFound, HttpStatus.NOT_FOUND);
+    }
+}
+
+export class CreateAccessTokenConflictException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.CreateAccessTokenConflict, HttpStatus.CONFLICT);
+    }
+}
+
+export class CreateRefreshTokenConflictException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.CreateRefreshTokenConflict, HttpStatus.CONFLICT);
+    }
+}
+
+export class JwtRefreshTokenExpiredException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtRefreshTokenExpired, HttpStatus.UNAUTHORIZED);
+    }
+}
+
+export class JwtRefreshTokenInvalidSignatureException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtRefreshTokenInvalidSignature, HttpStatus.UNAUTHORIZED);
     }
 }

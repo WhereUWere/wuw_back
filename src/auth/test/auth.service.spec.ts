@@ -215,11 +215,12 @@ describe('AuthService', () => {
             expect(result).toStrictEqual(resDto);
         });
         it('카카오에 등록된 회원 이메일로 가입한 유저일 경우, 가입 여부와 이메일, AccessToken 을 리턴한다.', async () => {
-            getUserEmailByKakaoMock.mockImplementation(() => 'test@kakao.com');
-            userRepository.findUserIdByEmail = jest.fn().mockResolvedValue({ userId: 1 });
             const accessToken = await jwtService.signAsync({ userId: 1 });
             const reqDto = new PostSignInKakaoReq('testAccessToken');
             const resDto = new PostSignInKakaoRes(true, 'test@kakao.com', accessToken);
+            getUserEmailByKakaoMock.mockImplementation(() => 'test@kakao.com');
+            userRepository.findUserIdByEmail = jest.fn().mockResolvedValue({ userId: 1 });
+            jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
             const result = await authService.signInWithKakao(reqDto);
             expect(result).toStrictEqual(resDto);
         });

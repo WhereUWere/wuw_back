@@ -8,8 +8,14 @@ import { ProfileRepository } from 'src/user/repository/profile.repository';
 import { PostSignUpReq } from './dto/request/post.signup.req';
 import { PostSignUpRes } from './dto/response/post.signup.res';
 import {
+    CreateAccessTokenConflictException,
+    CreateRefreshTokenConflictException,
     EmailExistsException,
     EmailNotFoundException,
+    JwtAccessTokenExpiredException,
+    JwtAccessTokenInvalidSignatureException,
+    JwtRefreshTokenExpiredException,
+    JwtRefreshTokenInvalidSignatureException,
     KakaoAuthConflictException,
     KakaoEmailNotFoundException,
     NotAuthenticatedException,
@@ -32,6 +38,7 @@ import { PostSignInKakaoRes } from './dto/response/post.signin-kakao.res';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { IReadKakaoEmail } from './interface/read.kakao-email.interface';
+import { User as UserModel } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -66,7 +73,7 @@ export class AuthService {
             encryptedPassword,
         );
 
-        const accessToken = await this.createAccessToken(newUser.userId);
+        const accessToken = await this.createAccessToken(newUser);
 
         return new PostSignUpRes(req.nickname, accessToken);
     }
@@ -80,7 +87,7 @@ export class AuthService {
         const profile = await this.profileRepository.findNicknameByUserId(userExists.userId);
         if (!profile) throw new NicknameNotFoundException();
 
-        const accessToken = await this.createAccessToken(userExists.userId);
+        const accessToken = await this.createAccessToken(userExists);
         return new PostSignInRes(profile.nickname, accessToken);
     }
 
@@ -91,7 +98,7 @@ export class AuthService {
         const userExists = await this.userRepository.findUserIdByEmail(userEmail);
         if (!userExists) return new PostSignInKakaoRes(false, userEmail);
 
-        const accessToken = await this.createAccessToken(userExists.userId);
+        const accessToken = await this.createAccessToken(userExists);
         return new PostSignInKakaoRes(true, userEmail, accessToken);
     }
 
@@ -110,9 +117,54 @@ export class AuthService {
         return new PostBreakOutRes(date);
     }
 
-    private async createAccessToken(userId: number): Promise<string> {
-        const jwtPayload = Object.assign({}, new JwtPayloadReq(userId));
-        return await this.jwtService.signAsync(jwtPayload);
+    async verifyAccessToken(accessToken: string): Promise<any> {
+        try {
+            return await this.jwtService.verifyAsync(accessToken, { secret: auth.jwtAccessSecret });
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.message === 'jwt expired') throw new JwtAccessTokenExpiredException();
+                if (error.message === 'invalid signature')
+                    throw new JwtAccessTokenInvalidSignatureException();
+            }
+        }
+    }
+
+    private async verifyRefreshToken(refreshToken: string): Promise<any> {
+        try {
+            return await this.jwtService.verifyAsync(refreshToken, {
+                secret: auth.jwtRefreshSecret,
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.message === 'jwt expired') throw new JwtRefreshTokenExpiredException();
+                if (error.message === 'invalid signature')
+                    throw new JwtRefreshTokenInvalidSignatureException();
+            }
+        }
+    }
+
+    private async createAccessToken(user: Pick<UserModel, 'userId'>): Promise<string> {
+        try {
+            const jwtPayload = Object.assign({}, new JwtPayloadReq(user.userId));
+            return await this.jwtService.signAsync(jwtPayload, {
+                secret: auth.jwtAccessSecret,
+                expiresIn: auth.jwtAccessExpireTime,
+            });
+        } catch (error) {
+            throw new CreateAccessTokenConflictException();
+        }
+    }
+
+    private async createRefreshToken(user: Pick<UserModel, 'userId'>): Promise<string> {
+        try {
+            const jwtPayload = Object.assign({}, new JwtPayloadReq(user.userId));
+            return await this.jwtService.signAsync(jwtPayload, {
+                secret: auth.jwtRefreshSecret,
+                expiresIn: auth.jwtRefreshExpireTime,
+            });
+        } catch (error) {
+            throw new CreateRefreshTokenConflictException();
+        }
     }
 
     private async encryptPassword(password: string): Promise<string> {
