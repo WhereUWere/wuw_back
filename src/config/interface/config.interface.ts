@@ -7,8 +7,10 @@ export interface ApiConfigProps {
 }
 
 export interface AuthConfigProps {
-    jwtSecret: string;
-    jwtExpireTime: string;
+    jwtAccessSecret: string;
+    jwtAccessExpireTime: string;
+    jwtRefreshSecret: string;
+    jwtRefreshExpireTime: string;
     hashSalt: number;
     kakaoServerUrl: string;
 }

@@ -14,8 +14,8 @@ import { http } from 'src/config/httpConfig';
         PrismaModule,
         JwtModule.register({
             global: true,
-            secret: auth.jwtSecret,
-            signOptions: { expiresIn: auth.jwtExpireTime },
+            secret: auth.jwtAccessSecret,
+            signOptions: { expiresIn: auth.jwtAccessExpireTime },
         }),
         HttpModule.register({
             timeout: http.httpTimeout,
