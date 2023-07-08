@@ -47,6 +47,17 @@ export class UserRepository {
         });
     }
 
+    async setEncryptedRefreshToken(userId: number, encryptedToken: string): Promise<UserModel> {
+        return await this.prisma.user.update({
+            where: {
+                userId,
+            },
+            data: {
+                refreshToken: encryptedToken,
+            },
+        });
+    }
+
     async hardDelete(userId: number): Promise<UserModel> {
         return await this.prisma.user.delete({
             where: {

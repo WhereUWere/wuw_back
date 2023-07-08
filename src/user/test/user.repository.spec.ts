@@ -101,6 +101,17 @@ describe('UserRepository', () => {
         });
     });
 
+    describe('setEncryptedRefreshToken', () => {
+        it('setEncryptedRefreshToken 가 정의되어 있다.', () => {
+            expect(userRepository.setEncryptedRefreshToken).toBeDefined();
+        });
+        it('업데이트한 user 를 리턴한다.', async () => {
+            prismaService.user.update = jest.fn().mockResolvedValue(mockedUser);
+            const result = await userRepository.setEncryptedRefreshToken(1, 'testRefreshToken');
+            expect(result).toStrictEqual(mockedUser);
+        });
+    });
+
     describe('hardDelete', () => {
         it('hardDelete 가 정의되어 있다.', () => {
             expect(userRepository.hardDelete).toBeDefined();

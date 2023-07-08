@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Post } from 'src/lib/utils/decorators/http-method.decorator';
@@ -16,6 +16,7 @@ import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
 import { now } from 'src/lib/utils/dates/date.utils';
 import { PostSignInKakaoRes } from './dto/response/post.signin-kakao.res';
 import { PostSignInKakaoReq } from './dto/request/post.signin-kakao.req';
+import { Response } from 'express';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -50,8 +51,13 @@ export class AuthController {
         type: PostSignUpRes,
     })
     @ApiBody({ type: PostSignUpReq })
-    async signUp(@Body() req: PostSignUpReq): Promise<PostSignUpRes> {
-        return await this.authService.signUp(req);
+    async signUp(
+        @Body() req: PostSignUpReq,
+        @Res({ passthrough: true }) res: Response,
+    ): Promise<PostSignUpRes> {
+        const resDto = await this.authService.signUp(req);
+        res.cookie('Refresh-Token', resDto.refreshToken, { httpOnly: true });
+        return resDto;
     }
 
     @Post({

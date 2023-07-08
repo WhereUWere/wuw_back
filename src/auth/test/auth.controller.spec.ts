@@ -14,6 +14,7 @@ import { PostBreakOutReq } from '../dto/request/post.breakout.req';
 import { PostBreakOutRes } from '../dto/response/post.breakout.res';
 import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
 import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
+import { Response } from 'express';
 
 describe('AuthController', () => {
     let authController: AuthController;
@@ -65,9 +66,11 @@ describe('AuthController', () => {
         });
         it('Service 의 반환값을 리턴한다.', async () => {
             const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
-            const resDto = new PostSignUpRes('test', 'testAccessToken');
+            const resDto = new PostSignUpRes('test', 'testAccessToken', 'testRefreshToken');
+            const res = {} as Response;
+            res.cookie = jest.fn();
             authService.signUp = jest.fn().mockResolvedValue(resDto);
-            const result = await authController.signUp(reqDto);
+            const result = await authController.signUp(reqDto, res);
             expect(result).toBe(resDto);
         });
     });

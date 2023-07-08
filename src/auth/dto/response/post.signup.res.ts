@@ -8,9 +8,13 @@ export class PostSignUpRes {
     @Exclude()
     private readonly _accessToken: string;
 
-    constructor(nickname: string, accessToken: string) {
+    @Exclude()
+    private readonly _refreshToken: string;
+
+    constructor(nickname: string, accessToken: string, refreshToken: string) {
         this._nickname = nickname;
         this._accessToken = accessToken;
+        this._refreshToken = refreshToken;
     }
 
     @ApiProperty()
@@ -23,5 +27,10 @@ export class PostSignUpRes {
     @Expose()
     get accessToken(): string {
         return this._accessToken;
+    }
+
+    @Exclude()
+    get refreshToken(): string {
+        return this._refreshToken;
     }
 }

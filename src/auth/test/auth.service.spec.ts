@@ -138,13 +138,14 @@ describe('AuthService', () => {
             await expect(result).rejects.toThrowError(new NicknameExistsException());
         });
         it('signUp 이 성공하면, nickname 과 accessToken 을 리턴한다.', async () => {
-            const accessToken = await jwtService.signAsync({ userId: mockedUser.userId });
+            const testToken = await jwtService.signAsync({ userId: mockedUser.userId });
             const reqDto = new PostSignUpReq('abcdefg@test.com', 'test', 'password');
-            const resDto = new PostSignUpRes('test', accessToken);
-            jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
+            const resDto = new PostSignUpRes('test', testToken, testToken);
+            jwtService.signAsync = jest.fn().mockImplementation(() => testToken);
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue(null);
             profileRepository.findUserIdByNickname = jest.fn().mockResolvedValue(null);
             userRepository.createAndSave = jest.fn().mockResolvedValue(mockedUser);
+            userRepository.setEncryptedRefreshToken = jest.fn();
             const result = await authService.signUp(reqDto);
             expect(result).toStrictEqual(resDto);
         });

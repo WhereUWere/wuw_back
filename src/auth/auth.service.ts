@@ -65,7 +65,7 @@ export class AuthService {
         const nicknameExists = await this.profileRepository.findUserIdByNickname(req.nickname);
         if (nicknameExists) throw new NicknameExistsException();
 
-        const encryptedPassword = await this.encryptPassword(req.password);
+        const encryptedPassword = await this.encryptString(req.password);
 
         const newUser = await this.userRepository.createAndSave(
             req.email,
@@ -74,8 +74,12 @@ export class AuthService {
         );
 
         const accessToken = await this.createAccessToken(newUser);
+        const refreshToken = await this.createRefreshToken(newUser);
+        const encryptedRefreshToken = await this.encryptString(refreshToken);
 
-        return new PostSignUpRes(req.nickname, accessToken);
+        await this.userRepository.setEncryptedRefreshToken(newUser.userId, encryptedRefreshToken);
+
+        return new PostSignUpRes(req.nickname, accessToken, refreshToken);
     }
 
     async signIn(req: PostSignInReq): Promise<PostSignInRes> {
@@ -167,10 +171,10 @@ export class AuthService {
         }
     }
 
-    private async encryptPassword(password: string): Promise<string> {
+    private async encryptString(target: string): Promise<string> {
         const salt = await bcrypt.genSalt(auth.hashSalt);
-        const encryptedPassword = await bcrypt.hash(password, salt);
-        return encryptedPassword;
+        const encryptedString = await bcrypt.hash(target, salt);
+        return encryptedString;
     }
 
     private async getUserEmailByKakao(kakaoAccessToken: string): Promise<string | undefined> {
