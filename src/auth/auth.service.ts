@@ -39,6 +39,7 @@ import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { IReadKakaoEmail } from './interface/read.kakao-email.interface';
 import { User as UserModel } from '@prisma/client';
+import { PostSignOutRes } from './dto/response/post.signout.res';
 
 @Injectable()
 export class AuthService {
@@ -113,6 +114,15 @@ export class AuthService {
 
         const accessToken = await this.createAccessToken(userExists);
         return new PostSignInKakaoRes(true, userEmail, accessToken);
+    }
+
+    async signOut(userId: number): Promise<PostSignOutRes> {
+        try {
+            await this.userRepository.clearRefreshToken(userId);
+            return new PostSignOutRes('success');
+        } catch (error) {
+            return new PostSignOutRes('fail');
+        }
     }
 
     /**

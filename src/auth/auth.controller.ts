@@ -17,6 +17,7 @@ import { now } from 'src/lib/utils/dates/date.utils';
 import { PostSignInKakaoRes } from './dto/response/post.signin-kakao.res';
 import { PostSignInKakaoReq } from './dto/request/post.signin-kakao.req';
 import { Response } from 'express';
+import { PostSignOutRes } from './dto/response/post.signout.res';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -85,6 +86,17 @@ export class AuthController {
     @ApiBody({ type: PostSignInKakaoReq })
     async signInWithKakao(@Body() req: PostSignInKakaoReq): Promise<PostSignInKakaoRes> {
         return await this.authService.signInWithKakao(req);
+    }
+
+    @Post({
+        endPoint: '/signout',
+        summary: '로그아웃',
+        type: PostSignOutRes,
+        status: HttpStatus.OK,
+    })
+    @ApiSecurity('Authorization')
+    async signOut(@AuthUser('userId') userId: number): Promise<PostSignOutRes> {
+        return await this.authService.signOut(userId);
     }
 
     @Post({

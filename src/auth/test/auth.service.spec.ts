@@ -31,6 +31,7 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
 import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
+import { PostSignOutRes } from '../dto/response/post.signout.res';
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -224,6 +225,26 @@ describe('AuthService', () => {
             userRepository.findUserIdByEmail = jest.fn().mockResolvedValue({ userId: 1 });
             jwtService.signAsync = jest.fn().mockImplementationOnce(() => accessToken);
             const result = await authService.signInWithKakao(reqDto);
+            expect(result).toStrictEqual(resDto);
+        });
+    });
+
+    describe('signOut', () => {
+        it('signOut 이 정의되어 있다.', () => {
+            expect(authService.signOut).toBeDefined();
+        });
+        it('signOut 에 실패할 경우, fail 을 리턴한다.', async () => {
+            const resDto = new PostSignOutRes('fail');
+            userRepository.clearRefreshToken = jest.fn().mockImplementationOnce(() => {
+                throw new Error();
+            });
+            const result = async () => await authService.signOut(1);
+            await expect(result()).resolves.toStrictEqual(resDto);
+        });
+        it('signOut 에 성공할 경우, success 를 리턴한다.', async () => {
+            const resDto = new PostSignOutRes('success');
+            userRepository.clearRefreshToken = jest.fn();
+            const result = await authService.signOut(1);
             expect(result).toStrictEqual(resDto);
         });
     });

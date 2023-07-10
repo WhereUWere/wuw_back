@@ -15,6 +15,7 @@ import { PostBreakOutRes } from '../dto/response/post.breakout.res';
 import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
 import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
 import { Response } from 'express';
+import { PostSignOutRes } from '../dto/response/post.signout.res';
 
 describe('AuthController', () => {
     let authController: AuthController;
@@ -99,6 +100,18 @@ describe('AuthController', () => {
             const resDto = new PostSignInKakaoRes(true, 'test@test.com', 'testAccessToken');
             authService.signInWithKakao = jest.fn().mockResolvedValue(resDto);
             const result = await authController.signInWithKakao(reqDto);
+            expect(result).toBe(resDto);
+        });
+    });
+
+    describe('signOut', () => {
+        it('signOut 이 정의되어 있다.', () => {
+            expect(authController.signOut).toBeDefined();
+        });
+        it('Service 의 반환값을 리턴한다.', async () => {
+            const resDto = new PostSignOutRes('success');
+            authService.signOut = jest.fn().mockResolvedValue(resDto);
+            const result = await authController.signOut(1);
             expect(result).toBe(resDto);
         });
     });

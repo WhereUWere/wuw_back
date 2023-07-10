@@ -58,6 +58,17 @@ export class UserRepository {
         });
     }
 
+    async clearRefreshToken(userId: number): Promise<UserModel> {
+        return await this.prisma.user.update({
+            where: {
+                userId,
+            },
+            data: {
+                refreshToken: null,
+            },
+        });
+    }
+
     async hardDelete(userId: number): Promise<UserModel> {
         return await this.prisma.user.delete({
             where: {
