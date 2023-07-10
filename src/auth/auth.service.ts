@@ -92,7 +92,16 @@ export class AuthService {
         if (!profile) throw new NicknameNotFoundException();
 
         const accessToken = await this.createAccessToken(userExists);
-        return new PostSignInRes(profile.nickname, accessToken);
+        const refreshToken = await this.createRefreshToken(userExists);
+
+        const encryptedRefreshToken = await this.encryptString(refreshToken);
+
+        await this.userRepository.setEncryptedRefreshToken(
+            userExists.userId,
+            encryptedRefreshToken,
+        );
+
+        return new PostSignInRes(profile.nickname, accessToken, refreshToken);
     }
 
     async signInWithKakao(req: PostSignInKakaoReq): Promise<PostSignInKakaoRes> {

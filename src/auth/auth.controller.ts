@@ -67,8 +67,13 @@ export class AuthController {
         status: HttpStatus.OK,
     })
     @ApiBody({ type: PostSignInReq })
-    async signIn(@Body() req: PostSignInReq): Promise<PostSignInRes> {
-        return await this.authService.signIn(req);
+    async signIn(
+        @Body() req: PostSignInReq,
+        @Res({ passthrough: true }) res: Response,
+    ): Promise<PostSignInRes> {
+        const resDto = await this.authService.signIn(req);
+        res.cookie('Refresh-Token', resDto.refreshToken, { httpOnly: true });
+        return resDto;
     }
 
     @Post({

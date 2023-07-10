@@ -81,9 +81,11 @@ describe('AuthController', () => {
         });
         it('Service 의 반환값을 리턴한다.', async () => {
             const reqDto = new PostSignInReq('abcdefg@test.com', 'password');
-            const resDto = new PostSignInRes('test', 'testAccessToken');
+            const resDto = new PostSignInRes('test', 'testAccessToken', 'testRefreshToken');
+            const res = {} as Response;
+            res.cookie = jest.fn();
             authService.signIn = jest.fn().mockResolvedValue(resDto);
-            const result = await authController.signIn(reqDto);
+            const result = await authController.signIn(reqDto, res);
             expect(result).toBe(resDto);
         });
     });
