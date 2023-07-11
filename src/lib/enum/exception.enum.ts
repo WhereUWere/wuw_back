@@ -21,6 +21,8 @@ export enum AuthExceptionCodeEnum {
     CreateRefreshTokenConflict = '0012',
     JwtRefreshTokenExpired = '0013',
     JwtRefreshTokenInvalidSignature = '0014',
+    JwtRefreshTokenNotFound = '0015',
+    UserRefreshTokenNotFound = '0016',
 }
 
 export enum ProfileExceptionCodeEnum {

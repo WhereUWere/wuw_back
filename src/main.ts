@@ -7,6 +7,7 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AllExceptionFilter } from './lib/filter/exception.filter';
 import { ValidationError } from 'class-validator';
 import { ValidateException } from './lib/exceptions/validate.exception';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -23,6 +24,7 @@ async function bootstrap() {
     app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)));
     app.setGlobalPrefix(api.globalPrefix);
     app.enableCors({ origin: true, methods: ['GET', 'POST', 'PUT', 'DELETE'] });
+    app.use(cookieParser());
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle('WUW APIs')

@@ -24,7 +24,7 @@ export class JwtMiddleware implements NestMiddleware {
             const token = req.headers['authorization'].replace('Bearer ', '');
             try {
                 const decodedObj = await this.authService.verifyAccessToken(token);
-                const userId = decodedObj['userId'];
+                const userId = decodedObj?.['userId'];
                 if (!userId) throw new JwtInvalidTokenException();
                 const userModel = await this.userRepository.findUserByUserId(userId);
                 if (!userModel) throw new JwtUserNotFoundException();

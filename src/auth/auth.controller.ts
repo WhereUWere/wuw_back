@@ -1,7 +1,7 @@
-import { Body, Controller, HttpStatus, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Post } from 'src/lib/utils/decorators/http-method.decorator';
+import { Get, Post } from 'src/lib/utils/decorators/http-method.decorator';
 import { PostEmailRes } from './dto/response/post.email.res';
 import { PostEmailReq } from './dto/request/post.email.req';
 import { PostNicknameRes } from './dto/response/post.nickname.res';
@@ -16,8 +16,9 @@ import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
 import { now } from 'src/lib/utils/dates/date.utils';
 import { PostSignInKakaoRes } from './dto/response/post.signin-kakao.res';
 import { PostSignInKakaoReq } from './dto/request/post.signin-kakao.req';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PostSignOutRes } from './dto/response/post.signout.res';
+import { GetAccessTokenRes } from './dto/response/get.access-token.res';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -97,6 +98,17 @@ export class AuthController {
     @ApiSecurity('Authorization')
     async signOut(@AuthUser('userId') userId: number): Promise<PostSignOutRes> {
         return await this.authService.signOut(userId);
+    }
+
+    @Post({
+        endPoint: '/access-token',
+        summary: '액세스 토큰 재발급',
+        type: GetAccessTokenRes,
+    })
+    @ApiSecurity('Authorization')
+    async getAccessTokenWithRefreshToken(@Req() req: Request): Promise<GetAccessTokenRes> {
+        const refreshToken = req?.cookies?.['Refresh-Token'];
+        return await this.authService.getAccessTokenWithRefreshToken(refreshToken);
     }
 
     @Post({

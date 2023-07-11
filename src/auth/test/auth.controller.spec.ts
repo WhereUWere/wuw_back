@@ -14,8 +14,9 @@ import { PostBreakOutReq } from '../dto/request/post.breakout.req';
 import { PostBreakOutRes } from '../dto/response/post.breakout.res';
 import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
 import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PostSignOutRes } from '../dto/response/post.signout.res';
+import { GetAccessTokenRes } from '../dto/response/get.access-token.res';
 
 describe('AuthController', () => {
     let authController: AuthController;
@@ -112,6 +113,19 @@ describe('AuthController', () => {
             const resDto = new PostSignOutRes('success');
             authService.signOut = jest.fn().mockResolvedValue(resDto);
             const result = await authController.signOut(1);
+            expect(result).toBe(resDto);
+        });
+    });
+
+    describe('getAccessTokenWithRefreshToken', () => {
+        it('getAccessTokenWithRefreshToken 이 정의되어 있다.', () => {
+            expect(authController.getAccessTokenWithRefreshToken).toBeDefined();
+        });
+        it('Service 의 반환값을 리턴한다.', async () => {
+            const req = { cookies: { 'Refresh-Token': 'testRefreshToken' } } as Request;
+            const resDto = new GetAccessTokenRes('testAccessToken');
+            authService.getAccessTokenWithRefreshToken = jest.fn().mockResolvedValue(resDto);
+            const result = await authController.getAccessTokenWithRefreshToken(req);
             expect(result).toBe(resDto);
         });
     });

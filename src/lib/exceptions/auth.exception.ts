@@ -85,3 +85,15 @@ export class JwtRefreshTokenInvalidSignatureException extends BaseException {
         super(AuthExceptionCodeEnum.JwtRefreshTokenInvalidSignature, HttpStatus.UNAUTHORIZED);
     }
 }
+
+export class JwtRefreshTokenNotFoundException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.JwtRefreshTokenNotFound, HttpStatus.BAD_REQUEST);
+    }
+}
+
+export class UserRefreshTokenNotFoundException extends BaseException {
+    constructor() {
+        super(AuthExceptionCodeEnum.UserRefreshTokenNotFound, HttpStatus.NOT_FOUND);
+    }
+}

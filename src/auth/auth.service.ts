@@ -14,12 +14,16 @@ import {
     EmailNotFoundException,
     JwtAccessTokenExpiredException,
     JwtAccessTokenInvalidSignatureException,
+    JwtInvalidTokenException,
     JwtRefreshTokenExpiredException,
     JwtRefreshTokenInvalidSignatureException,
+    JwtRefreshTokenNotFoundException,
+    JwtUserNotFoundException,
     KakaoAuthConflictException,
     KakaoEmailNotFoundException,
     NotAuthenticatedException,
     UserNotFoundException,
+    UserRefreshTokenNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
 import * as bcrypt from 'bcrypt';
 import { auth } from 'src/config/authConfig';
@@ -40,6 +44,7 @@ import { lastValueFrom } from 'rxjs';
 import { IReadKakaoEmail } from './interface/read.kakao-email.interface';
 import { User as UserModel } from '@prisma/client';
 import { PostSignOutRes } from './dto/response/post.signout.res';
+import { GetAccessTokenRes } from './dto/response/get.access-token.res';
 
 @Injectable()
 export class AuthService {
@@ -123,6 +128,26 @@ export class AuthService {
         } catch (error) {
             return new PostSignOutRes('fail');
         }
+    }
+
+    async getAccessTokenWithRefreshToken(refreshToken: string): Promise<GetAccessTokenRes> {
+        if (!refreshToken) throw new JwtRefreshTokenNotFoundException();
+
+        const decodedObj = await this.verifyRefreshToken(refreshToken);
+        const userId = decodedObj?.['userId'];
+        if (!userId) throw new JwtInvalidTokenException();
+
+        const userModel = await this.userRepository.findUserByUserId(userId);
+        if (!userModel) throw new JwtUserNotFoundException();
+
+        const encryptedRefreshToken = userModel?.refreshToken;
+        if (!encryptedRefreshToken) throw new UserRefreshTokenNotFoundException();
+
+        const isMatch = await bcrypt.compare(refreshToken, encryptedRefreshToken);
+        if (!isMatch) throw new NotAuthenticatedException();
+
+        const accessToken = await this.createAccessToken(userModel);
+        return new GetAccessTokenRes(accessToken);
     }
 
     /**
