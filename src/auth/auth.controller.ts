@@ -18,7 +18,7 @@ import { PostSignInKakaoRes } from './dto/response/post.signin-kakao.res';
 import { PostSignInKakaoReq } from './dto/request/post.signin-kakao.req';
 import { Request, Response } from 'express';
 import { PostSignOutRes } from './dto/response/post.signout.res';
-import { GetAccessTokenRes } from './dto/response/get.access-token.res';
+import { PostAccessTokenRes } from './dto/response/post.access-token.res';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -103,10 +103,10 @@ export class AuthController {
     @Post({
         endPoint: '/access-token',
         summary: '액세스 토큰 재발급',
-        type: GetAccessTokenRes,
+        type: PostAccessTokenRes,
     })
     @ApiSecurity('Authorization')
-    async getAccessTokenWithRefreshToken(@Req() req: Request): Promise<GetAccessTokenRes> {
+    async getAccessTokenWithRefreshToken(@Req() req: Request): Promise<PostAccessTokenRes> {
         const refreshToken = req?.cookies?.['Refresh-Token'];
         return await this.authService.getAccessTokenWithRefreshToken(refreshToken);
     }

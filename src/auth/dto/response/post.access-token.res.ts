@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
-export class GetAccessTokenRes {
+export class PostAccessTokenRes {
     @Exclude()
     private readonly _accessToken: string;
 

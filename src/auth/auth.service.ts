@@ -44,7 +44,7 @@ import { lastValueFrom } from 'rxjs';
 import { IReadKakaoEmail } from './interface/read.kakao-email.interface';
 import { User as UserModel } from '@prisma/client';
 import { PostSignOutRes } from './dto/response/post.signout.res';
-import { GetAccessTokenRes } from './dto/response/get.access-token.res';
+import { PostAccessTokenRes } from './dto/response/post.access-token.res';
 
 @Injectable()
 export class AuthService {
@@ -130,7 +130,7 @@ export class AuthService {
         }
     }
 
-    async getAccessTokenWithRefreshToken(refreshToken: string): Promise<GetAccessTokenRes> {
+    async getAccessTokenWithRefreshToken(refreshToken?: string): Promise<PostAccessTokenRes> {
         if (!refreshToken) throw new JwtRefreshTokenNotFoundException();
 
         const decodedObj = await this.verifyRefreshToken(refreshToken);
@@ -147,7 +147,7 @@ export class AuthService {
         if (!isMatch) throw new NotAuthenticatedException();
 
         const accessToken = await this.createAccessToken(userModel);
-        return new GetAccessTokenRes(accessToken);
+        return new PostAccessTokenRes(accessToken);
     }
 
     /**

@@ -11,9 +11,15 @@ import { PostSignUpReq } from '../dto/request/post.signup.req';
 import {
     EmailExistsException,
     EmailNotFoundException,
+    JwtInvalidTokenException,
+    JwtRefreshTokenExpiredException,
+    JwtRefreshTokenInvalidSignatureException,
+    JwtRefreshTokenNotFoundException,
+    JwtUserNotFoundException,
     KakaoEmailNotFoundException,
     NotAuthenticatedException,
     UserNotFoundException,
+    UserRefreshTokenNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
 import { Role, User as UserModel } from '@prisma/client';
@@ -32,6 +38,7 @@ import { HttpService } from '@nestjs/axios';
 import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
 import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
 import { PostSignOutRes } from '../dto/response/post.signout.res';
+import { PostAccessTokenRes } from '../dto/response/post.access-token.res';
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -217,7 +224,7 @@ describe('AuthService', () => {
             const result = await authService.signInWithKakao(reqDto);
             expect(result).toStrictEqual(resDto);
         });
-        it('카카오에 등록된 회원 이메일로 가입한 유저일 경우, 가입 여부와 이메일, AccessToken 을 리턴한다.', async () => {
+        it('카카오에 등록된 회원 이메일로 가입한 유저일 경우, 가입 여부와 이메일, accessToken 을 리턴한다.', async () => {
             const accessToken = await jwtService.signAsync({ userId: 1 });
             const reqDto = new PostSignInKakaoReq('testAccessToken');
             const resDto = new PostSignInKakaoRes(true, 'test@kakao.com', accessToken);
@@ -245,6 +252,84 @@ describe('AuthService', () => {
             const resDto = new PostSignOutRes('success');
             userRepository.clearRefreshToken = jest.fn();
             const result = await authService.signOut(1);
+            expect(result).toStrictEqual(resDto);
+        });
+    });
+
+    describe('getAccessTokenWithRefreshToken', () => {
+        it('getAccessTokenWithRefreshToken 이 정의되어 있다.', () => {
+            expect(authService.getAccessTokenWithRefreshToken).toBeDefined();
+        });
+        it('Cookie 에 refreshToken 이 존재하지 않을 경우, JwtRefreshTokenNotFoundException 발생', async () => {
+            const result = async () => await authService.getAccessTokenWithRefreshToken(undefined);
+            await expect(result).rejects.toThrowError(new JwtRefreshTokenNotFoundException());
+        });
+        it('refreshToken 이 만료된 경우, JwtRefreshTokenExpiredException 발생', async () => {
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => {
+                throw new Error('jwt expired');
+            });
+            const result = async () =>
+                await authService.getAccessTokenWithRefreshToken('testRefreshToken');
+            await expect(result).rejects.toThrowError(new JwtRefreshTokenExpiredException());
+        });
+        it('refreshToken 의 secret 값이 다른 경우, JwtRefreshTokenInvalidSignatureException 발생', async () => {
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => {
+                throw new Error('invalid signature');
+            });
+            const result = async () =>
+                await authService.getAccessTokenWithRefreshToken('testRefreshToken');
+            await expect(result).rejects.toThrowError(
+                new JwtRefreshTokenInvalidSignatureException(),
+            );
+        });
+        it('refreshToken 에 userId 가 존재하지 않는 경우, JwtInvalidTokenException 발생', async () => {
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => ({ fake_id: 1 }));
+            const result = async () =>
+                await authService.getAccessTokenWithRefreshToken('testRefreshToken');
+            await expect(result).rejects.toThrowError(new JwtInvalidTokenException());
+        });
+        it('userId 에 해당하는 유저가 존재하지 않는 경우, JwtUserNotFoundException 발생', async () => {
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => ({ userId: 1 }));
+            userRepository.findUserByUserId = jest.fn().mockImplementation(() => null);
+            const result = async () =>
+                await authService.getAccessTokenWithRefreshToken('testRefreshToken');
+            await expect(result).rejects.toThrowError(new JwtUserNotFoundException());
+        });
+        it('유저의 refreshToken 이 존재하지 않는 경우, UserRefreshTokenNotFoundException 발생', async () => {
+            const userWithoutRefreshToken: UserModel = {
+                userId: 1,
+                email: 'abcdefg@test.com',
+                password: encryptedPassword,
+                role: Role.USER,
+                registeredAt: new Date('2023-05-07 03:33:00'),
+                updatedAt: new Date('2023-05-07 03:33:00'),
+                deletedAt: null,
+                refreshToken: null,
+            };
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => ({ userId: 1 }));
+            userRepository.findUserByUserId = jest
+                .fn()
+                .mockImplementation(() => userWithoutRefreshToken);
+            const result = async () =>
+                await authService.getAccessTokenWithRefreshToken('testRefreshToken');
+            await expect(result).rejects.toThrowError(new UserRefreshTokenNotFoundException());
+        });
+        it('유저의 refreshToken 과 일치하지 않는 경우, NotAuthenticatedException 발생', async () => {
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => ({ userId: 1 }));
+            userRepository.findUserByUserId = jest.fn().mockImplementation(() => mockedUser);
+            jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => false);
+            const result = async () =>
+                await authService.getAccessTokenWithRefreshToken('testRefreshToken');
+            await expect(result).rejects.toThrowError(new NotAuthenticatedException());
+        });
+        it('유저의 refreshToken 과 일치하는 경우, accessToken 을 생성해 리턴한다.', async () => {
+            const testAccessToken = 'testAccessToken';
+            const resDto = new PostAccessTokenRes(testAccessToken);
+            jwtService.verifyAsync = jest.fn().mockImplementation(() => ({ userId: 1 }));
+            userRepository.findUserByUserId = jest.fn().mockImplementation(() => mockedUser);
+            jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => true);
+            jwtService.signAsync = jest.fn().mockImplementation(() => testAccessToken);
+            const result = await authService.getAccessTokenWithRefreshToken('testRefreshToken');
             expect(result).toStrictEqual(resDto);
         });
     });

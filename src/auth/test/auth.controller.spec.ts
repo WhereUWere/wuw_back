@@ -16,7 +16,7 @@ import { PostSignInKakaoReq } from '../dto/request/post.signin-kakao.req';
 import { PostSignInKakaoRes } from '../dto/response/post.signin-kakao.res';
 import { Request, Response } from 'express';
 import { PostSignOutRes } from '../dto/response/post.signout.res';
-import { GetAccessTokenRes } from '../dto/response/get.access-token.res';
+import { PostAccessTokenRes } from '../dto/response/post.access-token.res';
 
 describe('AuthController', () => {
     let authController: AuthController;
@@ -123,7 +123,7 @@ describe('AuthController', () => {
         });
         it('Service 의 반환값을 리턴한다.', async () => {
             const req = { cookies: { 'Refresh-Token': 'testRefreshToken' } } as Request;
-            const resDto = new GetAccessTokenRes('testAccessToken');
+            const resDto = new PostAccessTokenRes('testAccessToken');
             authService.getAccessTokenWithRefreshToken = jest.fn().mockResolvedValue(resDto);
             const result = await authController.getAccessTokenWithRefreshToken(req);
             expect(result).toBe(resDto);
