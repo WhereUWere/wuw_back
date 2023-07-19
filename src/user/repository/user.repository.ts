@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { User as UserModel } from '@prisma/client';
+import { now } from 'src/lib/utils/dates/date.utils';
 
 @Injectable()
 export class UserRepository {
@@ -69,8 +70,13 @@ export class UserRepository {
         });
     }
 
-    async hardDelete(userId: number): Promise<UserModel> {
-        return await this.prisma.user.delete({
+    async softDelete(userId: number, date: Date = now()): Promise<UserModel> {
+        return await this.prisma.user.update({
+            data: {
+                email: `탈퇴한 이메일${userId}`,
+                refreshToken: null,
+                deletedAt: date,
+            },
             where: {
                 userId,
             },

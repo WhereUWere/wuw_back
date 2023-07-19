@@ -123,14 +123,25 @@ describe('UserRepository', () => {
         });
     });
 
-    describe('hardDelete', () => {
-        it('hardDelete 가 정의되어 있다.', () => {
-            expect(userRepository.hardDelete).toBeDefined();
+    describe('softDelete', () => {
+        it('softDelete 가 정의되어 있다.', () => {
+            expect(userRepository.softDelete).toBeDefined();
         });
         it('user 를 hard delete 하고 리턴한다.', async () => {
-            prismaService.user.delete = jest.fn().mockResolvedValue(mockedUser);
-            const result = await userRepository.hardDelete(1);
-            expect(result).toStrictEqual(mockedUser);
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const deletedUser: UserModel = {
+                userId: 1,
+                email: '탈퇴한 이메일1',
+                password: encryptedPassword,
+                role: Role.USER,
+                registeredAt: new Date('2023-05-07 03:33:00'),
+                updatedAt: new Date('2023-05-07 03:33:00'),
+                deletedAt: deletedAt,
+                refreshToken: null,
+            };
+            prismaService.user.update = jest.fn().mockResolvedValue(deletedUser);
+            const result = await userRepository.softDelete(1, deletedAt);
+            expect(result).toStrictEqual(deletedUser);
         });
     });
 });

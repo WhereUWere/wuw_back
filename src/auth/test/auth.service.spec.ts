@@ -354,10 +354,20 @@ describe('AuthService', () => {
         });
         it('breakOut 이 성공하면, 탈퇴 날짜를 리턴한다.', async () => {
             const deletedAt = new Date('2023-05-07 15:36:00');
+            const deletedUser: UserModel = {
+                userId: 1,
+                email: '탈퇴한 이메일1',
+                password: encryptedPassword,
+                role: Role.USER,
+                registeredAt: new Date('2023-05-07 03:33:00'),
+                updatedAt: new Date('2023-05-07 03:33:00'),
+                deletedAt: deletedAt,
+                refreshToken: null,
+            };
             const reqDto = new PostBreakOutReq('password');
             const resDto = new PostBreakOutRes(deletedAt);
             userRepository.findUserByUserId = jest.fn().mockResolvedValue(mockedUser);
-            userRepository.hardDelete = jest.fn().mockResolvedValue(mockedUser);
+            userRepository.softDelete = jest.fn().mockResolvedValue(deletedUser);
             const result = await authService.breakOut(1, reqDto, deletedAt);
             expect(result).toStrictEqual(resDto);
         });

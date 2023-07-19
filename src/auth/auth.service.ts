@@ -45,6 +45,7 @@ import { IReadKakaoEmail } from './interface/read.kakao-email.interface';
 import { User as UserModel } from '@prisma/client';
 import { PostSignOutRes } from './dto/response/post.signout.res';
 import { PostAccessTokenRes } from './dto/response/post.access-token.res';
+import { now } from 'src/lib/utils/dates/date.utils';
 
 @Injectable()
 export class AuthService {
@@ -150,17 +151,17 @@ export class AuthService {
         return new PostAccessTokenRes(accessToken);
     }
 
-    /**
-     * @todo Prisma soft delete middleware 적용
-     * @legacy soft delete 로 수정될 예정
-     */
-    async breakOut(userId: number, req: PostBreakOutReq, date: Date): Promise<PostBreakOutRes> {
+    async breakOut(
+        userId: number,
+        req: PostBreakOutReq,
+        date: Date = now(),
+    ): Promise<PostBreakOutRes> {
         const userExists = await this.userRepository.findUserByUserId(userId);
         if (!userExists) throw new UserNotFoundException();
         const isMatch = await bcrypt.compare(req.password, userExists.password);
         if (!isMatch) throw new NotAuthenticatedException();
 
-        await this.userRepository.hardDelete(userId);
+        await this.userRepository.softDelete(userId, date);
 
         return new PostBreakOutRes(date);
     }
