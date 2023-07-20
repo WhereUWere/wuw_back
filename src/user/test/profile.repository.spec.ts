@@ -111,4 +111,27 @@ describe('ProfileRepository', () => {
             expect(result).toBe(updatedMockedProfile);
         });
     });
+
+    describe('softDelete', () => {
+        it('softDelete 가 정의되어 있다.', () => {
+            expect(profileRepository).toBeDefined();
+        });
+        it('profile 을 soft delete 하고 리턴한다.', async () => {
+            const deletedAt = new Date('2023-05-07 15:36:00');
+            const deletedProfile: ProfileModel = {
+                userId: 1,
+                nickname: '탈퇴한 유저1',
+                phoneNumber: null,
+                birthOfDate: null,
+                avatar: null,
+                bio: null,
+                createdAt: new Date('2023-05-07 03:33:00'),
+                updatedAt: new Date('2023-05-07 03:33:00'),
+                deletedAt,
+            };
+            prismaService.profile.update = jest.fn().mockResolvedValue(deletedProfile);
+            const result = await profileRepository.softDelete(1, deletedAt);
+            expect(result).toStrictEqual(deletedProfile);
+        });
+    });
 });

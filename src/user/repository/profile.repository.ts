@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Profile as ProfileModel } from '@prisma/client';
 import { IUpdateProfile } from '../interface/update.profile.interface';
+import { now } from 'src/lib/utils/dates/date.utils';
 
 @Injectable()
 export class ProfileRepository {
@@ -44,6 +45,22 @@ export class ProfileRepository {
             },
             data: {
                 ...data,
+            },
+        });
+    }
+
+    async softDelete(userId: number, date: Date = now()): Promise<ProfileModel> {
+        return await this.prisma.profile.update({
+            data: {
+                nickname: `탈퇴한 유저${userId}`,
+                phoneNumber: null,
+                birthOfDate: null,
+                avatar: null,
+                bio: null,
+                deletedAt: date,
+            },
+            where: {
+                userId,
             },
         });
     }

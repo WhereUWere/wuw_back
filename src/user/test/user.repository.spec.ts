@@ -127,7 +127,7 @@ describe('UserRepository', () => {
         it('softDelete 가 정의되어 있다.', () => {
             expect(userRepository.softDelete).toBeDefined();
         });
-        it('user 를 hard delete 하고 리턴한다.', async () => {
+        it('user 를 soft delete 하고 리턴한다.', async () => {
             const deletedAt = new Date('2023-05-07 15:36:00');
             const deletedUser: UserModel = {
                 userId: 1,
@@ -136,7 +136,7 @@ describe('UserRepository', () => {
                 role: Role.USER,
                 registeredAt: new Date('2023-05-07 03:33:00'),
                 updatedAt: new Date('2023-05-07 03:33:00'),
-                deletedAt: deletedAt,
+                deletedAt,
                 refreshToken: null,
             };
             prismaService.user.update = jest.fn().mockResolvedValue(deletedUser);

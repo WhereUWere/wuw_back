@@ -162,6 +162,7 @@ export class AuthService {
         if (!isMatch) throw new NotAuthenticatedException();
 
         await this.userRepository.softDelete(userId, date);
+        await this.profileRepository.softDelete(userId, date);
 
         return new PostBreakOutRes(date);
     }

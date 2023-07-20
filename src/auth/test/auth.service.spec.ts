@@ -22,7 +22,7 @@ import {
     UserRefreshTokenNotFoundException,
 } from 'src/lib/exceptions/auth.exception';
 import { PostSignUpRes } from '../dto/response/post.signup.res';
-import { Role, User as UserModel } from '@prisma/client';
+import { Profile as ProfileModel, Role, User as UserModel } from '@prisma/client';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PostSignInReq } from '../dto/request/post.signin.req';
 import { PostSignInRes } from '../dto/response/post.signin.res';
@@ -354,20 +354,13 @@ describe('AuthService', () => {
         });
         it('breakOut 이 성공하면, 탈퇴 날짜를 리턴한다.', async () => {
             const deletedAt = new Date('2023-05-07 15:36:00');
-            const deletedUser: UserModel = {
-                userId: 1,
-                email: '탈퇴한 이메일1',
-                password: encryptedPassword,
-                role: Role.USER,
-                registeredAt: new Date('2023-05-07 03:33:00'),
-                updatedAt: new Date('2023-05-07 03:33:00'),
-                deletedAt: deletedAt,
-                refreshToken: null,
-            };
+            const deletedUser = {} as UserModel;
+            const deletedProfile = {} as ProfileModel;
             const reqDto = new PostBreakOutReq('password');
             const resDto = new PostBreakOutRes(deletedAt);
             userRepository.findUserByUserId = jest.fn().mockResolvedValue(mockedUser);
             userRepository.softDelete = jest.fn().mockResolvedValue(deletedUser);
+            profileRepository.softDelete = jest.fn().mockResolvedValue(deletedProfile);
             const result = await authService.breakOut(1, reqDto, deletedAt);
             expect(result).toStrictEqual(resDto);
         });
