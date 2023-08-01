@@ -1,14 +1,13 @@
-import { Body, Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBody, ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Get, Patch, Post } from 'src/lib/utils/decorators/http-method.decorator';
 import { GetProfileRes } from './dto/response/get.profile.res';
 import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
 import { PatchProfileReq } from './dto/request/patch.profile.req';
 import { PatchProfileRes } from './dto/response/patch.profile.res';
 import { PostAvatarRes } from './dto/response/post.avatar.res';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ImageFile } from 'src/lib/utils/decorators/image-file.decorator';
+import { ApiUploadFile } from 'src/lib/utils/decorators/api-upload-file.decorator';
 
 @Controller('users')
 @ApiTags('User API')
@@ -32,7 +31,7 @@ export class UserController {
     }
 
     @Post({ endPoint: 'avatar', summary: '아바타 이미지 업로드', type: PostAvatarRes })
-    @ImageFile('image')
+    @ApiUploadFile('image')
     // @ApiSecurity('Authorization')
     async uploadAvatar(
         // @AuthUser('userId') userId: number,
