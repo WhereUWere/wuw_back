@@ -6,6 +6,7 @@ import * as Joi from 'joi';
 import { JwtMiddleware } from './lib/middlewares/jwt.middleware';
 import { AuthController } from './auth/auth.controller';
 import { UserController } from './user/user.controller';
+import { ImageModule } from './image/image.module';
 
 @Module({
     imports: [
@@ -34,6 +35,7 @@ import { UserController } from './user/user.controller';
         }),
         UserModule,
         AuthModule,
+        ImageModule,
     ],
 })
 export class AppModule implements NestModule {
