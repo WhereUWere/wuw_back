@@ -18,3 +18,10 @@ export interface AuthConfigProps {
 export interface HttpConfigProps {
     httpTimeout: number;
 }
+
+export interface AwsConfigProps {
+    awsRegion: string;
+    awsS3AccessKey: string;
+    awsS3SecretAccessKey: string;
+    awsAvatarS3Bucket: string;
+}
