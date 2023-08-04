@@ -30,3 +30,11 @@ export enum ProfileExceptionCodeEnum {
     NicknameExists = '0101',
     ProfileNotFound = '0102',
 }
+
+export enum ImageExceptionCodeEnum {
+    UnsupportedMimetype = '0200',
+}
+
+export enum S3ExceptionCodeEnum {
+    S3ServiceExecutionFailed = '0300',
+}

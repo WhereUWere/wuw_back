@@ -8,11 +8,15 @@ import { PatchProfileReq } from './dto/request/patch.profile.req';
 import { PatchProfileRes } from './dto/response/patch.profile.res';
 import { PostAvatarRes } from './dto/response/post.avatar.res';
 import { ApiUploadFile } from 'src/lib/utils/decorators/api-upload-file.decorator';
+import { ImageService } from 'src/image/image.service';
 
 @Controller('users')
 @ApiTags('User API')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly imageService: ImageService,
+    ) {}
 
     @Get({ endPoint: 'profile', summary: '프로필 조회', type: GetProfileRes })
     @ApiSecurity('Authorization')
@@ -32,11 +36,11 @@ export class UserController {
 
     @Post({ endPoint: 'avatar', summary: '아바타 이미지 업로드', type: PostAvatarRes })
     @ApiUploadFile('image')
-    // @ApiSecurity('Authorization')
+    @ApiSecurity('Authorization')
     async uploadAvatar(
-        // @AuthUser('userId') userId: number,
+        @AuthUser('userId') userId: number,
         @UploadedFile() image: Express.Multer.File,
-    ) {
-        console.log(image);
+    ): Promise<PostAvatarRes> {
+        return await this.imageService.uploadAvatar(userId, image);
     }
 }

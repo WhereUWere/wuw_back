@@ -49,6 +49,38 @@ export class ProfileRepository {
         });
     }
 
+    async doesUserHaveAvatar(userId: number): Promise<boolean> {
+        const profile = await this.prisma.profile.findUnique({
+            where: {
+                userId,
+            },
+        });
+
+        return profile?.avatar ? true : false;
+    }
+
+    async updateAvatarByUserId(userId: number, path: string): Promise<ProfileModel> {
+        return await this.prisma.profile.update({
+            where: {
+                userId,
+            },
+            data: {
+                avatar: path,
+            },
+        });
+    }
+
+    async deleteAvatarByUserId(userId: number): Promise<void> {
+        await this.prisma.profile.update({
+            where: {
+                userId,
+            },
+            data: {
+                avatar: null,
+            },
+        });
+    }
+
     async softDelete(userId: number, date: Date = now()): Promise<ProfileModel> {
         return await this.prisma.profile.update({
             data: {

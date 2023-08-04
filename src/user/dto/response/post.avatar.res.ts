@@ -3,7 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 
 export class PostAvatarRes {
     @Exclude()
-    _url: string;
+    private readonly _url: string;
 
     constructor(url: string) {
         this._url = url;
