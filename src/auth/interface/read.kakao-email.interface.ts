@@ -1,3 +1,5 @@
 export interface IReadKakaoEmail {
-    email: string;
+    kakao_account: {
+        email: string;
+    };
 }

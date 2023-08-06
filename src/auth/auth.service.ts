@@ -233,12 +233,11 @@ export class AuthService {
                     },
                     params: {
                         secure_resource: true,
-                        property_keys: ['kakao_account.email'],
                     },
                 }),
             );
 
-            return data.email;
+            return data?.kakao_account.email;
         } catch (error) {
             throw new KakaoAuthConflictException();
         }
