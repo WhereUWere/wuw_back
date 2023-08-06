@@ -18,13 +18,15 @@ export class ImageService {
             await this.profileRepository.deleteAvatarByUserId(userId);
         }
 
-        await this.s3Service.putObject(
-            file,
-            `${userId}/${file.originalname}`,
-            aws.awsAvatarS3Bucket,
-        );
-        await this.profileRepository.updateAvatarByUserId(userId, `${userId}/${file.originalname}`);
+        const key = this.makeAvatarKey(userId);
 
-        return new PostAvatarRes(`${userId}/${file.originalname}`);
+        await this.s3Service.putObject(file, key, aws.awsAvatarS3Bucket);
+        await this.profileRepository.updateAvatarByUserId(userId, key);
+
+        return new PostAvatarRes(key);
+    }
+
+    private makeAvatarKey(userId: number): string {
+        return `${userId}/avatar.jpeg`;
     }
 }
