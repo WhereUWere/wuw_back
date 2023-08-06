@@ -25,3 +25,7 @@ export interface AwsConfigProps {
     awsS3SecretAccessKey: string;
     awsAvatarS3Bucket: string;
 }
+
+export interface FileConfigProps {
+    avatarFileMaxSize: number;
+}

@@ -7,3 +7,9 @@ export class UnsupportedMimetypeException extends BaseException {
         super(ImageExceptionCodeEnum.UnsupportedMimetype, HttpStatus.BAD_REQUEST);
     }
 }
+
+export class ExcessFileMaxSizeException extends BaseException {
+    constructor() {
+        super(ImageExceptionCodeEnum.ExcessFileMaxSize, HttpStatus.BAD_REQUEST);
+    }
+}

@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { aws } from 'src/config/awsConfig';
+import { file as fileConfig } from 'src/config/fileConfig';
+import {
+    ExcessFileMaxSizeException,
+    UnsupportedMimetypeException,
+} from 'src/lib/exceptions/image.exception';
 import { S3Service } from 'src/s3/s3.service';
 import { PostAvatarRes } from 'src/user/dto/response/post.avatar.res';
 import { ProfileRepository } from 'src/user/repository/profile.repository';
@@ -12,6 +17,9 @@ export class ImageService {
     ) {}
 
     async uploadAvatar(userId: number, file: Express.Multer.File): Promise<PostAvatarRes> {
+        if (!file.mimetype.startsWith('image/')) throw new UnsupportedMimetypeException();
+        if (file.size >= fileConfig.avatarFileMaxSize) throw new ExcessFileMaxSizeException();
+
         const avatarExist = await this.profileRepository.doesUserHaveAvatar(userId);
         if (avatarExist) {
             await this.s3Service.clearDirectory(`${userId}/`, aws.awsAvatarS3Bucket);

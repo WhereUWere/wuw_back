@@ -35,6 +35,7 @@ import { ImageModule } from './image/image.module';
                 AWS_S3_ACCESS_KEY: Joi.string().required(),
                 AWS_S3_SECRET_ACCESS_KEY: Joi.string().required(),
                 AWS_AVATAR_S3_BUCKET: Joi.string().required(),
+                AVATAR_FILE_MAX_SIZE: Joi.number().required(),
             }),
         }),
         UserModule,

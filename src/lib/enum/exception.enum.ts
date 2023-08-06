@@ -33,6 +33,7 @@ export enum ProfileExceptionCodeEnum {
 
 export enum ImageExceptionCodeEnum {
     UnsupportedMimetype = '0200',
+    ExcessFileMaxSize = '0201',
 }
 
 export enum S3ExceptionCodeEnum {
