@@ -10,6 +10,7 @@ import { PostAvatarRes } from './dto/response/post.avatar.res';
 import { ApiUploadFile } from 'src/lib/utils/decorators/api-upload-file.decorator';
 import { ImageService } from 'src/image/image.service';
 import { DeleteAvatarRes } from './dto/response/delete.avatar.res';
+import { GetAvatarRes } from './dto/response/get.avatar.res';
 
 @Controller('users')
 @ApiTags('User API')
@@ -33,6 +34,12 @@ export class UserController {
         @Body() req: PatchProfileReq,
     ): Promise<PatchProfileRes> {
         return await this.userService.updateProfile(userId, req);
+    }
+
+    @Get({ endPoint: 'avatar', summary: '아바타 이미지 조회', type: GetAvatarRes })
+    @ApiSecurity('Authorization')
+    async getAvatar(@AuthUser('userId') userId: number): Promise<GetAvatarRes> {
+        return await this.imageService.getAvatar(userId);
     }
 
     @Post({ endPoint: 'avatar', summary: '아바타 이미지 업로드', type: PostAvatarRes })

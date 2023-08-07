@@ -73,4 +73,8 @@ export class S3Service {
             throw new S3ServiceExecutionFailedException();
         }
     }
+
+    createS3ObjectFullUrl(bucketName: string, path: string): string {
+        return `https://${bucketName}.s3.${aws.awsRegion}.amazonaws.com/${path}`;
+    }
 }

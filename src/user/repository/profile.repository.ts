@@ -59,6 +59,17 @@ export class ProfileRepository {
         return profile?.avatar ? true : false;
     }
 
+    async findAvatarByUserId(userId: number): Promise<{ avatar: string | null } | null> {
+        return await this.prisma.profile.findUnique({
+            where: {
+                userId,
+            },
+            select: {
+                avatar: true,
+            },
+        });
+    }
+
     async updateAvatarByUserId(userId: number, path: string): Promise<ProfileModel> {
         return await this.prisma.profile.update({
             where: {
