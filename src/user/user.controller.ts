@@ -1,7 +1,7 @@
 import { Body, Controller, UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Get, Patch, Post } from 'src/lib/utils/decorators/http-method.decorator';
+import { Delete, Get, Patch, Post } from 'src/lib/utils/decorators/http-method.decorator';
 import { GetProfileRes } from './dto/response/get.profile.res';
 import { AuthUser } from 'src/lib/utils/decorators/auth-user.decorator';
 import { PatchProfileReq } from './dto/request/patch.profile.req';
@@ -9,6 +9,7 @@ import { PatchProfileRes } from './dto/response/patch.profile.res';
 import { PostAvatarRes } from './dto/response/post.avatar.res';
 import { ApiUploadFile } from 'src/lib/utils/decorators/api-upload-file.decorator';
 import { ImageService } from 'src/image/image.service';
+import { DeleteAvatarRes } from './dto/response/delete.avatar.res';
 
 @Controller('users')
 @ApiTags('User API')
@@ -42,5 +43,11 @@ export class UserController {
         @UploadedFile() image: Express.Multer.File,
     ): Promise<PostAvatarRes> {
         return await this.imageService.uploadAvatar(userId, image);
+    }
+
+    @Delete({ endPoint: 'avatar', summary: '아바타 이미지 제거', type: DeleteAvatarRes })
+    @ApiSecurity('Authorization')
+    async deleteAvatar(@AuthUser('userId') userId: number): Promise<DeleteAvatarRes> {
+        return await this.imageService.deleteAvatar(userId);
     }
 }

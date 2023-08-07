@@ -6,6 +6,7 @@ import {
     UnsupportedMimetypeException,
 } from 'src/lib/exceptions/image.exception';
 import { S3Service } from 'src/s3/s3.service';
+import { DeleteAvatarRes } from 'src/user/dto/response/delete.avatar.res';
 import { PostAvatarRes } from 'src/user/dto/response/post.avatar.res';
 import { ProfileRepository } from 'src/user/repository/profile.repository';
 
@@ -21,10 +22,7 @@ export class ImageService {
         if (file.size >= fileConfig.avatarFileMaxSize) throw new ExcessFileMaxSizeException();
 
         const avatarExist = await this.profileRepository.doesUserHaveAvatar(userId);
-        if (avatarExist) {
-            await this.s3Service.clearDirectory(`${userId}/`, aws.awsAvatarS3Bucket);
-            await this.profileRepository.deleteAvatarByUserId(userId);
-        }
+        if (avatarExist) await this.s3Service.clearDirectory(`${userId}/`, aws.awsAvatarS3Bucket);
 
         const key = this.makeAvatarKey(userId);
 
@@ -32,6 +30,15 @@ export class ImageService {
         await this.profileRepository.updateAvatarByUserId(userId, key);
 
         return new PostAvatarRes(key);
+    }
+
+    async deleteAvatar(userId: number): Promise<DeleteAvatarRes> {
+        await this.s3Service.clearDirectory(`${userId}/`, aws.awsAvatarS3Bucket);
+        await this.profileRepository.deleteAvatarByUserId(userId);
+
+        const key = this.makeAvatarKey(userId);
+
+        return new DeleteAvatarRes(key);
     }
 
     private makeAvatarKey(userId: number): string {

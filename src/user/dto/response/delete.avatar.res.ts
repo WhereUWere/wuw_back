@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
-export class PostAvatarRes {
+export class DeleteAvatarRes {
     @Exclude()
     private readonly _url: string;
 
