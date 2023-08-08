@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Get, Post } from 'src/lib/utils/decorators/http-method.decorator';
+import { Post } from 'src/lib/utils/decorators/http-method.decorator';
 import { PostEmailRes } from './dto/response/post.email.res';
 import { PostEmailReq } from './dto/request/post.email.req';
 import { PostNicknameRes } from './dto/response/post.nickname.res';
