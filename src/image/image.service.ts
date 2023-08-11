@@ -35,7 +35,7 @@ export class ImageService {
         if (file.size >= fileConfig.avatarFileMaxSize) throw new ExcessFileMaxSizeException();
 
         const avatarExist = await this.profileRepository.doesUserHaveAvatar(userId);
-        if (avatarExist) await this.s3Service.clearDirectory(`${userId}/`, aws.awsAvatarS3Bucket);
+        if (avatarExist) await this.deleteAvatar(userId);
 
         const key = this.createAvatarKey(userId);
 
@@ -46,7 +46,8 @@ export class ImageService {
     }
 
     async deleteAvatar(userId: number): Promise<DeleteAvatarRes> {
-        await this.s3Service.clearDirectory(`${userId}/`, aws.awsAvatarS3Bucket);
+        await this.s3Service.clearDirectory(`origin/${userId}/`, aws.awsAvatarS3Bucket);
+        await this.s3Service.clearDirectory(`resize/${userId}/`, aws.awsAvatarS3Bucket);
         await this.profileRepository.deleteAvatarByUserId(userId);
 
         const key = this.createAvatarKey(userId);
@@ -55,6 +56,6 @@ export class ImageService {
     }
 
     private createAvatarKey(userId: number): string {
-        return `${userId}/avatar.jpeg`;
+        return `origin/${userId}/avatar.jpeg`;
     }
 }

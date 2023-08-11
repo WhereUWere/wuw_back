@@ -2,22 +2,23 @@ const sharp = require('sharp');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
-const transformationOptions = [{ name: 'w180', width: 180 }];
+const transformationOptions = [{ suffix: 'w180', width: 180 }];
 
 exports.handler = async (event) => {
     try {
         const Key = event.Records[0].s3.object.key;
-        const [directory, path] = Key.split('/');
-        console.log(`Image Resizing: ${path}`);
-        const image = await s3.getObject({ Bucket: 'simple-image-server', Key }).promise();
+        const Bucket = 'wuw-avatars';
+        const path = Key.split('/')[1];
+        const [filename, mimetype] = Key.split('/')[2].split('.');
+        const image = await s3.getObject({ Bucket, Key }).promise();
         await Promise.all(
-            transformationOptions.map(async ({ name, width }) => {
+            transformationOptions.map(async ({ suffix, width }) => {
                 try {
-                    const newKey = `${directory}/${path}_${name}`;
+                    const newKey = `resize/${path}/${filename}_${suffix}.${mimetype}`;
                     const resizedImage = await sharp(image.Body).rotate().resize(width).toBuffer();
                     await s3
                         .putObject({
-                            Bucket: 'simple-image-server',
+                            Bucket,
                             Body: resizedImage,
                             Key: newKey,
                         })
