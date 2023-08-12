@@ -5,19 +5,25 @@ import { UserService } from '../user.service';
 import { PatchProfileReq } from '../dto/request/patch.profile.req';
 import { PatchProfileRes } from '../dto/response/patch.profile.res';
 import { GetProfileRes } from '../dto/response/get.profile.res';
+import { ImageService } from 'src/image/image.service';
 
 describe('UserController', () => {
     let userController: UserController;
     let userService: UserService;
+    let imageService: ImageService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [UserController],
-            providers: [{ provide: UserService, useValue: createMock<UserService>() }],
+            providers: [
+                { provide: UserService, useValue: createMock<UserService>() },
+                { provide: ImageService, useValue: createMock<ImageService>() },
+            ],
         }).compile();
 
         userController = module.get<UserController>(UserController);
         userService = module.get<UserService>(UserService);
+        imageService = module.get<ImageService>(ImageService);
     });
 
     it('should be defined', () => {
