@@ -81,8 +81,8 @@ export class ProfileRepository {
         });
     }
 
-    async deleteAvatarByUserId(userId: number): Promise<void> {
-        await this.prisma.profile.update({
+    async deleteAvatarByUserId(userId: number): Promise<ProfileModel> {
+        return await this.prisma.profile.update({
             where: {
                 userId,
             },

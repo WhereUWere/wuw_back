@@ -112,6 +112,69 @@ describe('ProfileRepository', () => {
         });
     });
 
+    describe('doesUserHaveAvatar', () => {
+        it('doesUserHaveAvatar 가 정의되어 있다.', () => {
+            expect(profileRepository.doesUserHaveAvatar).toBeDefined();
+        });
+        it('userId 에 해당하는 avatar 가 없다면, false 를 리턴한다.', async () => {
+            prismaService.profile.findUnique = jest.fn().mockResolvedValue({ avatar: null });
+            const result = await profileRepository.doesUserHaveAvatar(1);
+            expect(result).toBe(false);
+        });
+        it('userId 에 해당하는 avatar 가 존재한다면, true 를 리턴한다.', async () => {
+            prismaService.profile.findUnique = jest.fn().mockResolvedValue({ avatar: 'test.jpeg' });
+            const result = await profileRepository.doesUserHaveAvatar(1);
+            expect(result).toBe(true);
+        });
+    });
+
+    describe('findAvatarByUserId', () => {
+        it('findAvatarByUserId 가 정의되어 있다.', () => {
+            expect(profileRepository.findAvatarByUserId).toBeDefined();
+        });
+        it('userId 에 해당하는 profile 이 없다면, null 을 리턴한다.', async () => {
+            prismaService.profile.findUnique = jest.fn().mockResolvedValue(null);
+            const result = await profileRepository.findAvatarByUserId(1);
+            expect(result).toBe(null);
+        });
+        it('userId 에 해당하는 avatar 가 없다면, { avatar: null } 을 리턴한다.', async () => {
+            prismaService.profile.findUnique = jest.fn().mockResolvedValue({ avatar: null });
+            const result = await profileRepository.findAvatarByUserId(1);
+            expect(result).toStrictEqual({ avatar: null });
+        });
+        it('userId 에 해당하는 avatar 가 존재한다면, 해당 값을 리턴한다.', async () => {
+            prismaService.profile.findUnique = jest.fn().mockResolvedValue({ avatar: 'test.jpeg' });
+            const result = await profileRepository.findAvatarByUserId(1);
+            expect(result).toStrictEqual({ avatar: 'test.jpeg' });
+        });
+    });
+
+    describe('updateAvatarByUserId', () => {
+        it('updateAvatarByUserId 가 정의되어 있다.', () => {
+            expect(profileRepository.updateAvatarByUserId).toBeDefined();
+        });
+        it('userId 에 해당하는 avatar 를 수정하고 리턴한다.', async () => {
+            prismaService.profile.update = jest
+                .fn()
+                .mockResolvedValue({ ...mockedProfile, avatar: 'test.jpeg' });
+            const result = await profileRepository.updateAvatarByUserId(1, 'test.jpeg');
+            expect(result).toStrictEqual({ ...mockedProfile, avatar: 'test.jpeg' });
+        });
+    });
+
+    describe('deleteAvatarByUserId', () => {
+        it('deleteAvatarByUserId 가 정의되어 있다.', () => {
+            expect(profileRepository.deleteAvatarByUserId).toBeDefined();
+        });
+        it('userId 에 해당하는 avatar 를 삭제하고 리턴한다.', async () => {
+            prismaService.profile.update = jest
+                .fn()
+                .mockResolvedValue({ ...mockedProfile, avatar: null });
+            const result = await profileRepository.deleteAvatarByUserId(1);
+            expect(result).toStrictEqual({ ...mockedProfile, avatar: null });
+        });
+    });
+
     describe('softDelete', () => {
         it('softDelete 가 정의되어 있다.', () => {
             expect(profileRepository).toBeDefined();
