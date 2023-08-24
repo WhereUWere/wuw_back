@@ -7,6 +7,7 @@ import { JwtMiddleware } from './lib/middlewares/jwt.middleware';
 import { AuthController } from './auth/auth.controller';
 import { UserController } from './user/user.controller';
 import { ImageModule } from './image/image.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
     imports: [
@@ -41,6 +42,7 @@ import { ImageModule } from './image/image.module';
         UserModule,
         AuthModule,
         ImageModule,
+        EmailModule,
     ],
 })
 export class AppModule implements NestModule {
