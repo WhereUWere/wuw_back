@@ -29,3 +29,8 @@ export interface AwsConfigProps {
 export interface FileConfigProps {
     avatarFileMaxSize: number;
 }
+
+export interface EmailConfigProps {
+    emailAddress: string;
+    emailPassword: string;
+}

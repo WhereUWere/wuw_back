@@ -39,3 +39,7 @@ export enum ImageExceptionCodeEnum {
 export enum S3ExceptionCodeEnum {
     S3ServiceExecutionFailed = '0300',
 }
+
+export enum EmailExceptionCodeEnum {
+    EmailServiceExecutionFailed = '0400',
+}
