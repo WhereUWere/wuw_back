@@ -1,24 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
 import { email } from 'src/config/emailConfig';
 import { EmailServiceExecutionFailedException } from 'src/lib/exceptions/email.exception';
 import { PostSendEmailRes } from './dto/response/post.send-email.res';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class EmailService {
-    private readonly transporter: nodemailer.Transporter;
-
-    constructor() {
-        this.transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: email.emailAddress,
-                pass: email.emailPassword,
-            },
-        });
-    }
+    constructor(private readonly mailSender: MailerService) {}
 
     async sendVerificationEmail(
         to: string,
@@ -26,7 +14,7 @@ export class EmailService {
         content: string,
     ): Promise<PostSendEmailRes> {
         try {
-            await this.transporter.sendMail({
+            await this.mailSender.sendMail({
                 from: email.emailAddress,
                 to,
                 subject,
