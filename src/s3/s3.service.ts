@@ -5,23 +5,13 @@ import {
     PutObjectCommand,
     S3Client,
 } from '@aws-sdk/client-s3';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { aws } from 'src/config/awsConfig';
 import { S3ServiceExecutionFailedException } from 'src/lib/exceptions/s3.exception';
 
 @Injectable()
 export class S3Service {
-    private readonly s3Client: S3Client;
-
-    constructor() {
-        this.s3Client = new S3Client({
-            region: aws.awsRegion,
-            credentials: {
-                accessKeyId: aws.awsS3AccessKey,
-                secretAccessKey: aws.awsS3SecretAccessKey,
-            },
-        });
-    }
+    constructor(@Inject('S3_CLIENT') private readonly s3Client: S3Client) {}
 
     async putObject(file: Express.Multer.File, key: string, bucketName: string): Promise<void> {
         const params = {

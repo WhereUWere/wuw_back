@@ -8,6 +8,7 @@ import { AuthController } from './auth/auth.controller';
 import { UserController } from './user/user.controller';
 import { ImageModule } from './image/image.module';
 import { EmailModule } from './email/email.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
     imports: [
@@ -45,6 +46,7 @@ import { EmailModule } from './email/email.module';
         AuthModule,
         ImageModule,
         EmailModule,
+        S3Module,
     ],
 })
 export class AppModule implements NestModule {
