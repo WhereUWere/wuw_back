@@ -13,7 +13,7 @@ import { S3ServiceExecutionFailedException } from 'src/lib/exceptions/s3.excepti
 export class S3Service {
     constructor(@Inject('S3_CLIENT') private readonly s3Client: S3Client) {}
 
-    async putObject(file: Express.Multer.File, key: string, bucketName: string): Promise<void> {
+    async putObject(file: Express.Multer.File, key: string, bucketName: string): Promise<string> {
         const params = {
             Body: file.buffer,
             Key: key,
@@ -22,12 +22,13 @@ export class S3Service {
 
         try {
             await this.s3Client.send(new PutObjectCommand(params));
+            return key;
         } catch (error) {
             throw new S3ServiceExecutionFailedException();
         }
     }
 
-    async deleteObject(key: string, bucketName: string): Promise<void> {
+    async deleteObject(key: string, bucketName: string): Promise<string> {
         const params = {
             Key: key,
             Bucket: bucketName,
@@ -35,12 +36,13 @@ export class S3Service {
 
         try {
             await this.s3Client.send(new DeleteObjectCommand(params));
+            return key;
         } catch (error) {
             throw new S3ServiceExecutionFailedException();
         }
     }
 
-    async clearDirectory(path: string, bucketName: string): Promise<void> {
+    async clearDirectory(path: string, bucketName: string): Promise<string> {
         try {
             const listParams = {
                 Prefix: path,
@@ -59,6 +61,7 @@ export class S3Service {
 
                 await this.s3Client.send(new DeleteObjectsCommand(deleteParams));
             }
+            return path;
         } catch (error) {
             throw new S3ServiceExecutionFailedException();
         }
