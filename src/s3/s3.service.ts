@@ -1,7 +1,9 @@
 import {
     DeleteObjectCommand,
     DeleteObjectsCommand,
+    DeleteObjectsCommandOutput,
     ListObjectsV2Command,
+    ListObjectsV2CommandOutput,
     PutObjectCommand,
     S3Client,
 } from '@aws-sdk/client-s3';
@@ -52,20 +54,26 @@ export class S3Service {
         return `https://${bucketName}.s3.${aws.awsRegion}.amazonaws.com/${path}`;
     }
 
-    private async listObjects(path: string, bucketName: string) {
+    private async listObjects(
+        path: string,
+        bucketName: string,
+    ): Promise<ListObjectsV2CommandOutput> {
         const listParams = {
             Prefix: path,
             Bucket: bucketName,
         };
 
         try {
-            return this.s3Client.send(new ListObjectsV2Command(listParams));
+            return await this.s3Client.send(new ListObjectsV2Command(listParams));
         } catch (error) {
             throw new S3ServiceExecutionFailedException();
         }
     }
 
-    private async deleteListObjects(list: any, bucketName: string) {
+    private async deleteListObjects(
+        list: any,
+        bucketName: string,
+    ): Promise<DeleteObjectsCommandOutput> {
         const deleteParams = {
             Bucket: bucketName,
             Delete: {
@@ -75,7 +83,7 @@ export class S3Service {
         };
 
         try {
-            await this.s3Client.send(new DeleteObjectsCommand(deleteParams));
+            return await this.s3Client.send(new DeleteObjectsCommand(deleteParams));
         } catch (error) {
             throw new S3ServiceExecutionFailedException();
         }
