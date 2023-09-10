@@ -43,31 +43,41 @@ export class S3Service {
     }
 
     async clearDirectory(path: string, bucketName: string): Promise<string> {
+        const list = await this.listObjects(path, bucketName);
+        if (list?.KeyCount) await this.deleteListObjects(list, bucketName);
+        return path;
+    }
+
+    createS3ObjectFullUrl(bucketName: string, path: string): string {
+        return `https://${bucketName}.s3.${aws.awsRegion}.amazonaws.com/${path}`;
+    }
+
+    private async listObjects(path: string, bucketName: string) {
+        const listParams = {
+            Prefix: path,
+            Bucket: bucketName,
+        };
+
         try {
-            const listParams = {
-                Prefix: path,
-                Bucket: bucketName,
-            };
-            const list = await this.s3Client.send(new ListObjectsV2Command(listParams));
-
-            if (list.KeyCount) {
-                const deleteParams = {
-                    Bucket: bucketName,
-                    Delete: {
-                        Objects: list.Contents?.map((object) => ({ Key: object.Key })),
-                        Quiet: false,
-                    },
-                };
-
-                await this.s3Client.send(new DeleteObjectsCommand(deleteParams));
-            }
-            return path;
+            return this.s3Client.send(new ListObjectsV2Command(listParams));
         } catch (error) {
             throw new S3ServiceExecutionFailedException();
         }
     }
 
-    createS3ObjectFullUrl(bucketName: string, path: string): string {
-        return `https://${bucketName}.s3.${aws.awsRegion}.amazonaws.com/${path}`;
+    private async deleteListObjects(list: any, bucketName: string) {
+        const deleteParams = {
+            Bucket: bucketName,
+            Delete: {
+                Objects: list.Contents?.map((object: any) => ({ Key: object.Key })),
+                Quiet: false,
+            },
+        };
+
+        try {
+            await this.s3Client.send(new DeleteObjectsCommand(deleteParams));
+        } catch (error) {
+            throw new S3ServiceExecutionFailedException();
+        }
     }
 }
